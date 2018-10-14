@@ -1,7 +1,12 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"yurko/daemons"
+)
 
 func main() {
 	fmt.Println("Init application")
+
+	daemons.Run()
 }
