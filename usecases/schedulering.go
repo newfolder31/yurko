@@ -2,7 +2,6 @@ package usecases
 
 import (
 	"errors"
-	"fmt"
 	"yurko/domains"
 )
 
@@ -23,6 +22,11 @@ type TimeRange struct {
 
 type Day struct {
 	day    uint8
+	ranges []TimeRange
+}
+
+type ExceptionalDate struct {
+	Date   uint64
 	ranges []TimeRange
 }
 
@@ -61,7 +65,7 @@ func (current *Time) Compare(compared Time) int8 {
 //
 //*добавление времени работы по умолчанию в профайле
 // а занчит, нужно созать для пользователя (userId) рассписание по
-// значениям [day: 1, ranges: [[start:12:00, end:13:00],[],[]]]
+// значениям [day: 1, ranges: [[start:12:00, end:13:00],[],[]]] ----> CreateNewScheduler
 //*быстрая модификация указанного времени
 // schedulerId + [date: 21.12.1996, ranges: [[start:12:00, end:13:00],[],[]]]
 //*получение рассписания на по дате
@@ -69,8 +73,12 @@ func (current *Time) Compare(compared Time) int8 {
 //- получение рассписания на неделю, а лучше на слайс дат
 
 func (interactor *SchedulingInteractor) CreateNewScheduler(userId uint64, professionType string, days []Day) error {
-	scheduler := interactor.SchedulerRepository.Store(domains.Scheduler{UserId: userId, ProfessionType: professionType})
-	intervals := make([]domains.Interval, 0, 14) //to test var
+	scheduler := domains.Scheduler{UserId: userId, ProfessionType: professionType}
+	err := interactor.SchedulerRepository.Store(&scheduler) //TODO handle error!
+	if err != nil {
+		return errors.New("Function CreateNewScheduler! Unable create new Scheduler!")
+	}
+	intervals := make([]domains.Interval, 0, 14)
 	for _, day := range days {
 		for _, timeRange := range day.ranges {
 			start := timeRange.start.timeInMinutes
@@ -79,10 +87,13 @@ func (interactor *SchedulingInteractor) CreateNewScheduler(userId uint64, profes
 			if err != nil {
 				return err
 			}
-			interactor.IntervalRepository.Store(interval)
+			interactor.IntervalRepository.Store(&interval)
 			intervals = append(intervals, interval)
 		}
 	}
-	fmt.Println(intervals)
 	return nil
+}
+
+func (interactor *SchedulingInteractor) AddExceptionsInScheduler(schedulerId uint64, exceptions []ExceptionalDate) error {
+
 }
