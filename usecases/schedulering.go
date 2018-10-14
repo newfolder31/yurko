@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"errors"
+	"fmt"
 	"yurko/domains"
 )
 
@@ -25,24 +26,24 @@ type Day struct {
 	ranges []TimeRange
 }
 
-func InitTime(hours, minutes int8) (Time, error) {
-	if 0 < hours || hours > 23 {
+func InitTime(hours, minutes uint16) (Time, error) {
+	if 0 > hours || hours > 23 {
 		return Time{}, errors.New("Invalid hours value [" + string(hours) + "]")
-	} else if 0 < minutes || minutes > 59 {
+	} else if 0 > minutes || minutes > 59 {
 		return Time{}, errors.New("Invalid minutes value [" + string(minutes) + "]")
 	}
-	return Time{timeInMinutes: uint16(hours*60 + minutes)}, nil
+	return Time{timeInMinutes: (hours)*60 + minutes}, nil
 }
 
 func InitTimeRange(start, end Time) (TimeRange, error) {
-	if end.compare(start) < 1 {
+	if end.Compare(start) < 1 {
 		return TimeRange{}, errors.New("Invalid time range. End time not later then start time!")
 	}
 	return TimeRange{start: start, end: end}, nil
 }
 
 func InitDay(day uint8, ranges []TimeRange) (Day, error) {
-	if 1 < day || day > 7 {
+	if 0 > day || day > 7 {
 		return Day{}, errors.New("Invalid day number [" + string(day) + "]")
 	}
 	return Day{day: day, ranges: ranges}, nil
@@ -66,17 +67,22 @@ func (current *Time) Compare(compared Time) int8 {
 //*получение рассписания на по дате
 // schedulerId, date
 //- получение рассписания на неделю, а лучше на слайс дат
-func (interactor *SchedulingInteractor) createNewScheduler(userId uint64, professionType string, days []Day) error {
-	scheduler := domains.Scheduler{UserId: userId, ProfessionType: professionType}
-	intervals := make([]domains.Interval, 0, 14)
+
+func (interactor *SchedulingInteractor) CreateNewScheduler(userId uint64, professionType string, days []Day) error {
+	scheduler := interactor.SchedulerRepository.Store(domains.Scheduler{UserId: userId, ProfessionType: professionType})
+	intervals := make([]domains.Interval, 0, 14) //to test var
 	for _, day := range days {
 		for _, timeRange := range day.ranges {
 			start := timeRange.start.timeInMinutes
 			end := timeRange.end.timeInMinutes
-			_, err := domains.InitInterval(scheduler.Id, uint64(0), start, end, day.day)
+			interval, err := domains.InitInterval(scheduler.Id, uint64(0), start, end, day.day)
 			if err != nil {
 				return err
 			}
+			interactor.IntervalRepository.Store(interval)
+			intervals = append(intervals, interval)
 		}
 	}
+	fmt.Println(intervals)
+	return nil
 }

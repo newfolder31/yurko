@@ -8,17 +8,19 @@ const (
 )
 
 type SchedulerRepository interface {
-	FindById(id uint64) Scheduler
+	FindById(id uint64) Scheduler //TODO , error ?????
 	FindAllByUserId(userId uint64) []Scheduler
-	Store(scheduler Scheduler)
-	Update(scheduler Scheduler)
+	Store(scheduler Scheduler) Scheduler
+	Update(scheduler Scheduler) Scheduler
+	Delete(id uint64)
 }
 
 type IntervalRepository interface {
 	FindById(id uint64) Interval
 	FindAllBySchedulerId(schedulerId uint64, sortBy string) []Interval
-	Store(interval Interval)
-	Update(interval Interval)
+	Store(interval Interval) Interval
+	Update(interval Interval) Interval
+	Delete(id uint64)
 }
 
 type Scheduler struct {
