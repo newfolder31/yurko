@@ -7,7 +7,7 @@ import (
 
 func AddCookie(w http.ResponseWriter, sessionId string) {
 	cookie := &http.Cookie{
-		Name:    COOKIE_NAME,
+		Name:    COOKIE_SESSION_NAME,
 		Value:   sessionId,
 		Expires: time.Now().Add(5 * time.Minute),
 	}
@@ -17,7 +17,7 @@ func AddCookie(w http.ResponseWriter, sessionId string) {
 
 func DeleteCookie(w http.ResponseWriter) {
 	cookie := &http.Cookie{
-		Name:    COOKIE_NAME,
+		Name:    COOKIE_SESSION_NAME,
 		Value:   "",
 		Expires: time.Unix(0, 0),
 	}

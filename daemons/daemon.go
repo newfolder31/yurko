@@ -9,12 +9,17 @@ import (
 
 func Run() error {
 	interfaces.Initialize()
+	userInMemoryRepo := interfaces.NewUserInMemoryRepo()
 
 	registrationInteractor := new(usecases.RegistrationInteractor)
-	registrationInteractor.UserRepository = interfaces.UserInMemoryRepo{}
+	registrationInteractor.UserRepository = userInMemoryRepo
+
+	authorizationInteractor := new(usecases.AuthorizationInteractor)
+	authorizationInteractor.UserRepository = userInMemoryRepo
 
 	webserviceHandler := interfaces.WebserviceHandler{}
 	webserviceHandler.RegistrationInteractor = registrationInteractor
+	webserviceHandler.AuthorizationInteractor = authorizationInteractor
 
 	http.HandleFunc("/registration/fast", func(res http.ResponseWriter, req *http.Request) {
 		webserviceHandler.FastRegistration(res, req)
@@ -24,9 +29,13 @@ func Run() error {
 		webserviceHandler.Registration(res, req)
 	})
 
-	//http.Handle("/registration", registrationHandler())
-	http.Handle("/login", loginHandler())
-	http.Handle("/logout", logoutHandler())
+	http.HandleFunc("/login", func(res http.ResponseWriter, req *http.Request) {
+		webserviceHandler.Login(res, req)
+	})
+
+	http.HandleFunc("/logout", func(res http.ResponseWriter, req *http.Request) {
+		webserviceHandler.Logout(res, req)
+	})
 
 	http.Handle("/", indexHandler())
 
@@ -43,26 +52,5 @@ func indexHandler() http.Handler {
 			userEmail := interfaces.GetCurrentUser(cookie.Value)
 			fmt.Fprintf(w, "Current user is %s\n", userEmail)
 		}
-	})
-}
-func loginHandler() http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		//if r.Method == http.MethodPost {
-		interfaces.Login(w, r)
-		w.WriteHeader(http.StatusOK)
-		//} else {
-		//	w.WriteHeader(http.StatusMethodNotAllowed)
-		//}
-	})
-}
-
-func logoutHandler() http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		//if r.Method == http.MethodPost {
-		interfaces.Logout(w, r)
-		w.WriteHeader(http.StatusOK)
-		//} else {
-		//	w.WriteHeader(http.StatusMethodNotAllowed)
-		//}
 	})
 }

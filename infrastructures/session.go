@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	COOKIE_NAME = "sessionId"
+	COOKIE_SESSION_NAME = "sessionId"
 )
 
 var inMemorySession *Session

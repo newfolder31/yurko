@@ -1,11 +1,25 @@
 package usecases
 
-import "fmt"
+import (
+	"errors"
+)
 
-func ValidateLogin(email, pass string) error {
-	fmt.Println("ValidateLogin ", email, pass)
+type LoginForm struct {
+	Email, Password string
+}
 
-	//UserRepo.FindByEmailAndPassword(email, pass)
+type AuthorizationInteractor struct {
+	UserRepository UserRepository
+}
+
+func (interactor *AuthorizationInteractor) ValidateCredentials(form *LoginForm) error {
+	//todo: encode password
+	user, _ := interactor.UserRepository.FindByEmailAndPassword(form.Email, form.Password)
+	if user == nil {
+		return errors.New("credentials are invalid")
+	} else if user.IsActive == false {
+		return errors.New("user is inactive")
+	}
 
 	return nil
 }

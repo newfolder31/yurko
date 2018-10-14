@@ -32,7 +32,7 @@ func (interactor *RegistrationInteractor) createUser(form *RegistrationForm) Use
 
 	user.IsActive = false
 
-	interactor.UserRepository.Store(user)
+	interactor.UserRepository.Store(&user)
 
 	fmt.Println("user created", user)
 
@@ -57,7 +57,10 @@ func (interactor *RegistrationInteractor) ValidateFastRegistrationRequest(form *
 }
 
 func (interactor *RegistrationInteractor) validateEmail(email string) error {
-	//todo: find user by email
+	user, _ := interactor.UserRepository.FindByEmail(email)
+	if user != nil {
+		return errors.New("user with specified email exists")
+	}
 	//todo: validate on regexp
 	return nil
 }
