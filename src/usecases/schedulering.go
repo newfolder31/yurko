@@ -1,8 +1,8 @@
 package usecases
 
 import (
+	"domains"
 	"errors"
-	"yurko/domains"
 )
 
 type SchedulingInteractor struct {

@@ -1,11 +1,11 @@
 package main
 
 import (
+	"domains"
 	"errors"
 	"fmt"
 	"time"
-	"yurko/domains"
-	"yurko/usecases"
+	"usecases"
 )
 
 func main() {
