@@ -3,16 +3,15 @@ package daemons
 import (
 	"yurko/interfaces"
 	"yurko/usecases/task"
-	"yurko/usecases/communication"
 	"net/http"
 )
 
 func Run() error {
 
 	inMemoStorage := interfaces.NewMemoStorage()
-	taskInMemoRepo := interfaces.TaskInMemoRepo{Storage: inMemoStorage}
-	relationInMemoRepo := interfaces.RelationInMemoRepo{Storage: inMemoStorage}
-	communicationInMemoRepo := interfaces.CommunicationInMemoRepo{Storage: inMemoStorage}
+	taskInMemoRepo := &interfaces.TaskInMemoRepo{Storage: inMemoStorage}
+	relationInMemoRepo := &interfaces.RelationInMemoRepo{Storage: inMemoStorage}
+	communicationInMemoRepo := &interfaces.CommunicationInMemoRepo{Storage: inMemoStorage}
 
 	taskInteractor := new(task.TaskInteractor)
 	taskInteractor.TaskRepository = taskInMemoRepo
@@ -20,7 +19,7 @@ func Run() error {
 	taskInteractor.CommunicationRepository = communicationInMemoRepo
 
 	webServiceHandler := interfaces.WebServiceHandler{}
-	webServiceHandler.Interactor := taskInteractor
+	webServiceHandler.Interactor = taskInteractor
 
 	http.HandleFunc("/task/announce", func(res http.ResponseWriter, req *http.Request){
 		webServiceHandler.Announce(res, req)

@@ -45,11 +45,16 @@ func (repo *TaskInMemoRepo) FindByOwner(id int) []*task.Task {
 	ids := make([]int, 0)
 	for k, v := range repo.Storage.Relations {
 		if v.UserId == id {
-			ids := append(ids, k)
+			ids = append(ids, k)
 		}
 	}
-	for i, v := range ids {
-		tasks := append(tasks, v)
+
+	for _, v := range repo.Storage.Tasks {
+		for _, id := range ids {
+			if v.Id == id {
+				tasks = append(tasks, v)
+			}
+		}
 	}
 	return tasks
 }
@@ -78,11 +83,12 @@ func (repo *RelationInMemoRepo) FindById(id int) *task.UserTaskRelation {
 }
 
 func (repo *RelationInMemoRepo) FindOwnershipByTask(Task *task.Task) *task.UserTaskRelation {
-	for k, v := range repo.Storage.Relations {
+	for _, v := range repo.Storage.Relations {
 		if v.TaskId == Task.Id && v.Relation == task.OWNER {
 			return v
 		}
 	}
+	return nil
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -97,5 +103,6 @@ func (repo *CommunicationInMemoRepo) Store(relationId int, lawyerUserId int) (in
 }
 
 func (repo *CommunicationInMemoRepo) FindById(id int) (int, int) {
+	return 0, 0
 	//todo
 }

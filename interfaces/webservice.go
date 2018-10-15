@@ -1,8 +1,6 @@
 package interfaces
 
 import (
-	"fmt"
-	"io"
 	"net/http"
 	"strconv"
 	"yurko/domains/task"
@@ -30,7 +28,7 @@ func (handler *WebServiceHandler) Announce(writer http.ResponseWriter, request *
 	description := request.FormValue("description")
 	//todo: validation
 
-	_, err := handler.Interactor.CreateAnnounce(userId, description)
+	_, _ = handler.Interactor.CreateAnnounce(userId, description)
 
 	if err != nil {
 		writer.WriteHeader(http.StatusOK)
@@ -47,10 +45,10 @@ func (handler *WebServiceHandler) Request(writer http.ResponseWriter, request *h
 
 	userId, err := strconv.Atoi(request.FormValue("userId"))
 	description := request.FormValue("description")
-	lawyerUserId := request.FormValue("lawyerUserId")
+	lawyerUserId, err := strconv.Atoi(request.FormValue("lawyerUserId"))
 	//todo: validation
 
-	_, err := handler.Interactor.CreateRequest(userId, description, lawyerUserId)
+	_, _ = handler.Interactor.CreateRequest(userId, description, lawyerUserId)
 
 	if err != nil {
 		writer.WriteHeader(http.StatusOK)

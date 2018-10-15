@@ -16,17 +16,17 @@ func (interactor *TaskInteractor) CreateAnnounce(userId int, description string)
 	//todo: is userId is client? (wait for client/lawyer impl)
 	//todo: error handling
 	announce := task.Task{Description: description}
-	err := interactor.TaskRepository.Store(&announce)
+	_ = interactor.TaskRepository.Store(&announce)
 
 	relation := task.UserTaskRelation{UserId: userId, TaskId: announce.Id, Relation: task.OWNER, Profession: task.LAWYER}
-	err := interactor.RelationRepository.Store(&relation)
+	_ = interactor.RelationRepository.Store(&relation)
 
 	return &announce, nil
 }
 
 func (interactor *TaskInteractor) CreateRequest(userId int, description string, lawyerUserId int) (*task.Task, error) {
-	request, err := interactor.CreateAnnounce(userId, description)
-	err := interactor.AssignTask(request, lawyerUserId)
+	request, _ := interactor.CreateAnnounce(userId, description)
+	_ = interactor.AssignTask(request, lawyerUserId)
 	return request, nil
 }
 
