@@ -31,7 +31,7 @@ func (interactor *TaskInteractor) CreateRequest(userId int, description string, 
 }
 
 func (interactor *TaskInteractor) AssignTask(task *task.Task, lawyerUserId int) error {
-	//todo: is lawyerUserId is lawyer?
+	//todo: is lawyerUserId a lawyer?
 	ownershipRelation := interactor.RelationRepository.FindOwnershipByTask(task)
 	_, err := interactor.CommunicationRepository.Store(ownershipRelation.Id, lawyerUserId)
 	return err
