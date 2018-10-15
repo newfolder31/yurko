@@ -12,6 +12,7 @@ type SchedulingInteractor struct {
 }
 
 type Time struct {
+	// todo remove)
 	timeInMinutes uint16
 }
 
@@ -26,7 +27,7 @@ type Day struct {
 }
 
 type ExceptionalDate struct {
-	Date   uint64
+	date   uint64
 	ranges []TimeRange
 }
 
@@ -78,7 +79,6 @@ func (interactor *SchedulingInteractor) CreateNewScheduler(userId uint64, profes
 	if err != nil {
 		return errors.New("Function CreateNewScheduler! Unable create new Scheduler!")
 	}
-	intervals := make([]domains.Interval, 0, 14)
 	for _, day := range days {
 		for _, timeRange := range day.ranges {
 			start := timeRange.start.timeInMinutes
@@ -88,12 +88,48 @@ func (interactor *SchedulingInteractor) CreateNewScheduler(userId uint64, profes
 				return err
 			}
 			interactor.IntervalRepository.Store(&interval)
-			intervals = append(intervals, interval)
 		}
 	}
 	return nil
 }
 
 func (interactor *SchedulingInteractor) AddExceptionsInScheduler(schedulerId uint64, exceptions []ExceptionalDate) error {
+	scheduler, _ := interactor.SchedulerRepository.FindById(schedulerId) // TODO handle error!
+	if scheduler != nil {
+		for _, oneException := range exceptions {
+			for _, timeRange := range oneException.ranges {
+				start := timeRange.start.timeInMinutes
+				end := timeRange.end.timeInMinutes
+				interval, err := domains.InitInterval(schedulerId, oneException.date, start, end, 1)
+				if err != nil {
+					return err
+				}
+				return interactor.IntervalRepository.Store(&interval)
+			}
+		}
+	}
+	errorMessage := "Scheduler with current id[" + string(schedulerId) + "] not found!"
+	return errors.New(errorMessage)
+}
+
+//with all interval
+func RemoveScheduler(schedulerId uint64) error {
+
+}
+
+//update all ranges in day in one action
+func (interactor *SchedulingInteractor) UpdateDayIntervals(schedulerId uint64, day Day) error {
+	//удалить прошлые за день, вставить новые
+}
+
+func (interactor *SchedulingInteractor) DeleteDayIntervals(schedulerId uint64, day uint8) error {
+
+}
+
+func (interactor *SchedulingInteractor) UpdateException(intervalId uint64) error {
+
+}
+
+func (interactor *SchedulingInteractor) DeleteException(intervalId uint64) error {
 
 }
