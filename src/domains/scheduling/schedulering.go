@@ -1,6 +1,26 @@
-package domains
+package scheduling
 
 import "errors"
+
+/** TODO Enums example
+// A Month specifies a month of the year (January = 1, ...).
+type Month int
+
+const (
+	January Month = 1 + iota
+	February
+	March
+	April
+	May
+	June
+	July
+	August
+	September
+	October
+	November
+	December
+)
+*/
 
 //todo it's mock for development
 const (
@@ -18,9 +38,12 @@ type SchedulerRepository interface {
 type IntervalRepository interface {
 	FindById(id uint64) (*Interval, error)
 	FindAllBySchedulerId(schedulerId uint64, sortBy string) (*[]*Interval, error)
+	FindAllBySchedulerIdAndDate(schedulerId uint64, date int64) (*[]*Interval, error)
 	Store(interval *Interval) error
 	Update(interval *Interval) error
 	Delete(id uint64) error
+	DeleteAllBySchedulerIdAndDay(schedulerId uint64, weekDay uint8) error
+	DeleteAllBySchedulerIdAndDate(schedulerId uint64, date int64) error
 }
 
 type Scheduler struct {
@@ -34,11 +57,11 @@ type Interval struct {
 	SchedulerId uint64
 	From        uint16 // to
 	To          uint16 // to
-	Date        uint64 // date for exceptional situation: overriding default interval
+	Date        int64  // date for exceptional situation: overriding default interval
 	weekDay     uint8
 }
 
-func InitInterval(schedulerId, Date uint64, from, to uint16, weekDay uint8) (Interval, error) {
+func InitInterval(schedulerId uint64, Date int64, from, to uint16, weekDay uint8) (Interval, error) {
 	item := Interval{SchedulerId: schedulerId, From: from, To: to, Date: Date}
 	if err := item.SetWeekDay(weekDay); err != nil {
 		return item, err

@@ -1,11 +1,11 @@
 package main
 
 import (
-	"domains"
+	domains "domains/scheduling"
 	"errors"
 	"fmt"
+	"sort"
 	"time"
-	"usecases"
 )
 
 func main() {
@@ -13,48 +13,58 @@ func main() {
 	fmt.Println(time.Now())
 
 	//TODO start case #1
-	testUserId := uint64(1)
-
-	intervalRepository := initTestIntervalRepository()
-	schedulerRepository := initTestSchedulerRepository()
-	a := usecases.SchedulingInteractor{IntervalRepository: intervalRepository, SchedulerRepository: schedulerRepository}
-
-	days := make([]usecases.Day, 0, 5)
-	for i := 1; i < 6; i++ {
-		start, _ := usecases.InitTime(uint16(i), 0)
-		end, _ := usecases.InitTime(uint16(i), 30)
-		timeRange, _ := usecases.InitTimeRange(start, end)
-		day, _ := usecases.InitDay(uint8(i), []usecases.TimeRange{timeRange})
-		days = append(days, day)
-	}
-
-	fmt.Println(days)
-	a.CreateNewScheduler(testUserId, "Jurist", days)
-	fmt.Println("--------------------------------------")
-
-	for _, i := range intervalRepository.storage {
-		fmt.Println(i)
-	}
-	for _, i := range schedulerRepository.storage {
-		fmt.Println(i)
-	}
-
+	//testUserId := uint64(1)
+	//
+	//intervalRepository := initTestIntervalRepository()
+	//schedulerRepository := initTestSchedulerRepository()
+	//a := usecases.SchedulingInteractor{IntervalRepository: intervalRepository, SchedulerRepository: schedulerRepository}
+	//
+	//days := make([]usecases.Day, 0, 5)
+	//for i := 1; i < 6; i++ {
+	//	start, _ := usecases.InitTime(uint16(i), 0)
+	//	end, _ := usecases.InitTime(uint16(i), 30)
+	//	timeRange, _ := usecases.InitTimeRange(start, end)
+	//	day, _ := usecases.InitDay(uint8(i), []usecases.TimeRange{timeRange})
+	//	days = append(days, day)
+	//}
+	//
+	//fmt.Println(days)
+	//a.CreateNewScheduler(testUserId, "Jurist", days)
+	//fmt.Println("--------------------------------------")
+	//
+	//for _, i := range intervalRepository.storage {
+	//	fmt.Println(i)
+	//}
+	//for _, i := range schedulerRepository.storage {
+	//	fmt.Println(i)
+	//}
 	//TODO end case #1
 
 	//TODO test code
-	//b := domains.Interval{Id: 1, SchedulerId: 1, From: 230, To: 300, Date: 232113313}
-	//bPointer := &b
-	//c := *bPointer
-	//cPointer := &c
-	//fmt.Println(b)
-	//fmt.Println(c)
-	//fmt.Println(cPointer)
-	//
-	//bPointer.Id = 2
-	//
-	//fmt.Println(b)
-	//fmt.Println(c)
-	//fmt.Println(cPointer)
+	var a []*Test
+	a1 := Test{a: 2}
+	a2 := Test{a: 1}
+	a3 := Test{a: 4}
+	a4 := Test{a: 3}
+	a5 := Test{a: 5}
+	a = append(a, &a1)
+	a = append(a, &a2)
+	a = append(a, &a3)
+	a = append(a, &a4)
+	a = append(a, &a5)
+	p := &a
+	sort.Slice(*p, func(i, j int) bool {
+		return (*p)[i].a < (*p)[j].a
+	})
+
+	for _, i := range a {
+		fmt.Println(i)
+	}
+
+}
+
+type Test struct {
+	a int
 }
 
 type TestIntervalRepository struct {
@@ -88,6 +98,17 @@ func (repository *TestIntervalRepository) FindAllBySchedulerId(schedulerId uint6
 	return &resultSlice, nil
 }
 
+func (repository *TestIntervalRepository) FindAllBySchedulerIdAndDate(schedulerId uint64, date int64) (*[]*domains.Interval, error) {
+	resultSlice := make([]*domains.Interval, 0)
+	for _, item := range repository.storage {
+		if item.SchedulerId == schedulerId && item.Date == date {
+			resultItem := *item
+			resultSlice = append(resultSlice, &resultItem)
+		}
+	}
+	return &resultSlice, nil
+}
+
 func (repository *TestIntervalRepository) Store(interval *domains.Interval) error {
 	if interval.Id == 0 {
 		interval.Id = repository.generateNextId(1)
@@ -109,6 +130,24 @@ func (repository *TestIntervalRepository) Delete(id uint64) error {
 		if item.Id == id {
 			repository.storage = append(repository.storage[:i], repository.storage[i+1:]...)
 			return nil
+		}
+	}
+	return nil
+}
+
+func (repository *TestIntervalRepository) DeleteAllBySchedulerIdAndDay(id uint64, weekDay uint8) error {
+	for i, item := range repository.storage {
+		if item.SchedulerId == id && item.GetWeekDay() == weekDay {
+			repository.storage = append(repository.storage[:i], repository.storage[i+1:]...)
+		}
+	}
+	return nil
+}
+
+func (repository *TestIntervalRepository) DeleteAllBySchedulerIdAndDate(id uint64, date int64) error {
+	for i, item := range repository.storage {
+		if item.SchedulerId == id && item.Date == date {
+			repository.storage = append(repository.storage[:i], repository.storage[i+1:]...)
 		}
 	}
 	return nil
