@@ -1,8 +1,6 @@
 package main
 
 import (
-	domains "domains/scheduling"
-	"errors"
 	"fmt"
 	"sort"
 	"time"
@@ -57,173 +55,13 @@ func main() {
 		return (*p)[i].a < (*p)[j].a
 	})
 
-	for _, i := range a {
-		fmt.Println(i)
-	}
+	fmt.Println(len(*p))
+	//for _, i := range a {
+	//	fmt.Println(i)
+	//}
 
 }
 
 type Test struct {
 	a int
-}
-
-type TestIntervalRepository struct {
-	storage []*domains.Interval
-}
-
-func initTestIntervalRepository() *TestIntervalRepository {
-	repo := new(TestIntervalRepository)
-	repo.storage = make([]*domains.Interval, 0)
-	return repo
-}
-
-func (repository *TestIntervalRepository) FindById(id uint64) (*domains.Interval, error) {
-	for _, item := range repository.storage {
-		if item.Id == id {
-			resultItem := *item
-			return &resultItem, nil
-		}
-	}
-	return nil, nil
-}
-
-func (repository *TestIntervalRepository) FindAllBySchedulerId(schedulerId uint64, sortBy string) (*[]*domains.Interval, error) {
-	resultSlice := make([]*domains.Interval, 0)
-	for _, item := range repository.storage {
-		if item.SchedulerId == schedulerId {
-			resultItem := *item
-			resultSlice = append(resultSlice, &resultItem)
-		}
-	}
-	return &resultSlice, nil
-}
-
-func (repository *TestIntervalRepository) FindAllBySchedulerIdAndDate(schedulerId uint64, date int64) (*[]*domains.Interval, error) {
-	resultSlice := make([]*domains.Interval, 0)
-	for _, item := range repository.storage {
-		if item.SchedulerId == schedulerId && item.Date == date {
-			resultItem := *item
-			resultSlice = append(resultSlice, &resultItem)
-		}
-	}
-	return &resultSlice, nil
-}
-
-func (repository *TestIntervalRepository) Store(interval *domains.Interval) error {
-	if interval.Id == 0 {
-		interval.Id = repository.generateNextId(1)
-	}
-	repository.storage = append(repository.storage, interval)
-	return nil
-}
-
-func (repository *TestIntervalRepository) Update(interval *domains.Interval) error {
-	if item, _ := repository.FindById(interval.Id); item.Id == 0 {
-		return errors.New("Object with current id not found!") // TODO discus!!!???
-	}
-	repository.Delete(interval.Id)
-	return repository.Store(interval)
-}
-
-func (repository *TestIntervalRepository) Delete(id uint64) error {
-	for i, item := range repository.storage {
-		if item.Id == id {
-			repository.storage = append(repository.storage[:i], repository.storage[i+1:]...)
-			return nil
-		}
-	}
-	return nil
-}
-
-func (repository *TestIntervalRepository) DeleteAllBySchedulerIdAndDay(id uint64, weekDay uint8) error {
-	for i, item := range repository.storage {
-		if item.SchedulerId == id && item.GetWeekDay() == weekDay {
-			repository.storage = append(repository.storage[:i], repository.storage[i+1:]...)
-		}
-	}
-	return nil
-}
-
-func (repository *TestIntervalRepository) DeleteAllBySchedulerIdAndDate(id uint64, date int64) error {
-	for i, item := range repository.storage {
-		if item.SchedulerId == id && item.Date == date {
-			repository.storage = append(repository.storage[:i], repository.storage[i+1:]...)
-		}
-	}
-	return nil
-}
-
-func (repository *TestIntervalRepository) generateNextId(step int) uint64 {
-	val := uint64(len(repository.storage) + step)
-	if i, _ := repository.FindById(val); i != nil {
-		return repository.generateNextId(step + 1)
-	}
-	return val
-}
-
-//-----------------------------------------------------------------------------
-
-type TestSchedulerRepository struct {
-	storage []*domains.Scheduler
-}
-
-func initTestSchedulerRepository() *TestSchedulerRepository {
-	repo := new(TestSchedulerRepository)
-	repo.storage = make([]*domains.Scheduler, 0)
-	return repo
-}
-
-func (repository *TestSchedulerRepository) FindById(id uint64) (*domains.Scheduler, error) {
-	for _, item := range repository.storage {
-		if item.Id == id {
-			resultItem := *item
-			return &resultItem, nil
-		}
-	}
-	return nil, nil
-}
-
-func (repository *TestSchedulerRepository) FindAllByUserId(userId uint64) (*[]*domains.Scheduler, error) {
-	resultSlice := make([]*domains.Scheduler, 0)
-	for _, item := range repository.storage {
-		if item.UserId == userId {
-			resultItem := *item
-			resultSlice = append(resultSlice, &resultItem)
-		}
-	}
-	return &resultSlice, nil
-}
-
-func (repository *TestSchedulerRepository) Store(scheduler *domains.Scheduler) error {
-	if scheduler.Id == 0 {
-		scheduler.Id = repository.generateNextId(1)
-	}
-	repository.storage = append(repository.storage, scheduler)
-	return nil
-}
-
-func (repository *TestSchedulerRepository) Update(scheduler *domains.Scheduler) error {
-	if item, _ := repository.FindById(scheduler.Id); item.Id == 0 {
-		return errors.New("Object with current id not found!") // TODO discus!!!???
-	}
-	repository.Delete(scheduler.Id)
-	return repository.Store(scheduler)
-}
-
-func (repository *TestSchedulerRepository) Delete(id uint64) error {
-	for i, item := range repository.storage {
-		if item.Id == id {
-			repository.storage = append(repository.storage[:i], repository.storage[i+1:]...)
-			return nil
-		}
-	}
-	return nil
-}
-
-func (repository *TestSchedulerRepository) generateNextId(step int) uint64 {
-	val := uint64(len(repository.storage) + step)
-	if i, _ := repository.FindById(val); i != nil {
-		return repository.generateNextId(step + 1)
-	}
-	return val
 }

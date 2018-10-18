@@ -38,6 +38,7 @@ type SchedulerRepository interface {
 type IntervalRepository interface {
 	FindById(id uint64) (*Interval, error)
 	FindAllBySchedulerId(schedulerId uint64, sortBy string) (*[]*Interval, error)
+	FindAllBySchedulerIdAndDay(schedulerId uint64, day uint8) (*[]*Interval, error)
 	FindAllBySchedulerIdAndDate(schedulerId uint64, date int64) (*[]*Interval, error)
 	Store(interval *Interval) error
 	Update(interval *Interval) error
@@ -71,7 +72,7 @@ func InitInterval(schedulerId uint64, Date int64, from, to uint16, weekDay uint8
 }
 
 func (item *Interval) SetWeekDay(weekDay uint8) error {
-	if weekDay < 1 || weekDay > 7 {
+	if weekDay < 0 || weekDay > 6 {
 		return errors.New("Illegal week weekDay number!")
 	}
 	item.weekDay = weekDay

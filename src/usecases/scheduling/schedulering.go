@@ -10,7 +10,6 @@ import (
 type SchedulingInteractor struct {
 	SchedulerRepository domains.SchedulerRepository
 	IntervalRepository  domains.IntervalRepository
-	//Logger
 }
 
 type Time struct {
@@ -49,7 +48,7 @@ func InitTimeRange(start, end Time) (TimeRange, error) {
 }
 
 func InitDay(day uint8, ranges []TimeRange) (Day, error) {
-	if 0 > day || day > 7 {
+	if day < 0 || day > 6 {
 		return Day{}, errors.New("Invalid weekDay number [" + string(day) + "]")
 	}
 	return Day{weekDay: day, ranges: ranges}, nil
@@ -64,7 +63,6 @@ func (current *Time) Compare(compared Time) int8 {
 	return 0
 }
 
-//
 //*добавление времени работы по умолчанию в профайле
 // а занчит, нужно созать для пользователя (userId) рассписание по
 // значениям [weekDay: 1, ranges: [[start:12:00, end:13:00],[],[]]] ----> CreateNewScheduler
@@ -96,24 +94,61 @@ func (interactor *SchedulingInteractor) getAllSchedulersByUserId(userId uint64) 
 	}
 }
 
-func (interactor *SchedulingInteractor) BuildSchedulerForDay(schedulerId uint64, date time.Time) error {
-	date = cleanUpDate(&date)
-	intervalsPointerSlice, err := interactor.IntervalRepository.FindAllBySchedulerIdAndDate(schedulerId, date.Unix())
-	if err != nil {
-		return err ////TODO Rewrap error
-	}
-	//intervalsPointerSlice.
-	sort.Slice(*intervalsPointerSlice, func(i, j int) bool {
-		return (*intervalsPointerSlice)[i].From < (*intervalsPointerSlice)[j].From
+func (interactor *SchedulingInteractor) BuildSchedulerForDateRange(schedulerId uint64, dates *[]time.Time) (map[time.Time]*[]*domains.Interval, error) {
+	result := make(map[time.Time]*[]*domains.Interval)
+	sort.Slice(*dates, func(i, j int) bool {
+		return (*dates)[i].Unix() < (*dates)[j].Unix()
 	})
-	return nil
+	for _, item := range *dates {
+		var err error
+		result[item], err = interactor.BuildSchedulerForDate(schedulerId, item)
+		if err != nil {
+			return result, err
+		}
+	}
+	return result, nil
 }
 
+func (interactor *SchedulingInteractor) BuildSchedulerForDate(schedulerId uint64, date time.Time) (*[]*domains.Interval, error) {
+	date = cleanUpDate(&date)
+	exceptionsSlice, err := interactor.IntervalRepository.FindAllBySchedulerIdAndDate(schedulerId, date.Unix())
+	if err != nil {
+		return nil, err ////TODO Rewrap error
+	}
+
+	if len(*exceptionsSlice) != 0 {
+		sort.Slice(*exceptionsSlice, func(i, j int) bool {
+			return (*exceptionsSlice)[i].From < (*exceptionsSlice)[j].From
+		})
+		sortIntervalSliceByDate(exceptionsSlice)
+		return exceptionsSlice, nil
+	}
+
+	regularSlice, err := interactor.IntervalRepository.FindAllBySchedulerIdAndDay(schedulerId, uint8(date.Weekday()))
+	if err != nil {
+		return nil, err ////TODO Rewrap error
+	}
+
+	sortIntervalSliceByDate(regularSlice)
+	return regularSlice, nil
+}
+
+func sortIntervalSliceByDate(slice *[]*domains.Interval) {
+	sort.Slice(*slice, func(i, j int) bool {
+		return (*slice)[i].From < (*slice)[j].From
+	})
+}
+
+//*в случае если был хоть один тайм рейнж был модифицирован
+// для исключительных ситуаций передаються все рейжи этого дня и сохраняються как исключительные тайм ренжи
+// сохранять тайм ренжи можно за один раз,
+// про попытке сохранить в несколько раз ренжи, прошлые ренжи на этот день должны удаляться
 func (interactor *SchedulingInteractor) AddExceptionsInScheduler(schedulerId uint64, exceptions []ExceptionalDate) error {
 	scheduler, _ := interactor.SchedulerRepository.FindById(schedulerId) // TODO handle error!
 	if scheduler != nil {
+		interactor.IntervalRepository.DeleteAllBySchedulerIdAndDate(schedulerId, exceptions[0].date)
 		for _, oneException := range exceptions {
-			interactor.exceptionalDateToIntervals(schedulerId, oneException)
+			interactor.storeIntervalsFromExceptions(schedulerId, oneException)
 		}
 	}
 	errorMessage := "Scheduler with current id[" + string(schedulerId) + "] not found!"
@@ -145,7 +180,7 @@ func (interactor *SchedulingInteractor) DeleteDayIntervals(schedulerId uint64, d
 }
 
 func (interactor *SchedulingInteractor) UpdateException(exception ExceptionalDate) error {
-	//interactor.exceptionalDateToIntervals(sc)
+	//interactor.storeIntervalsFromExceptions(sc)
 	return nil
 }
 
@@ -166,7 +201,7 @@ func (interactor *SchedulingInteractor) dayToIntervals(schedulerId uint64, day D
 	return nil
 }
 
-func (interactor *SchedulingInteractor) exceptionalDateToIntervals(schedulerId uint64, exception ExceptionalDate) error {
+func (interactor *SchedulingInteractor) storeIntervalsFromExceptions(schedulerId uint64, exception ExceptionalDate) error {
 	for _, timeRange := range exception.ranges {
 		start := timeRange.start.timeInMinutes
 		end := timeRange.end.timeInMinutes
