@@ -1,13 +1,12 @@
 package daemons
 
 import (
+	"net/http"
 	"yurko/interfaces"
 	"yurko/usecases/task"
-	"net/http"
 )
 
 func Run() error {
-
 	inMemoStorage := interfaces.NewMemoStorage()
 	taskInMemoRepo := &interfaces.TaskInMemoRepo{Storage: inMemoStorage}
 	relationInMemoRepo := &interfaces.RelationInMemoRepo{Storage: inMemoStorage}
@@ -21,24 +20,23 @@ func Run() error {
 	webServiceHandler := interfaces.WebServiceHandler{}
 	webServiceHandler.Interactor = taskInteractor
 
-	http.HandleFunc("/task/announce", func(res http.ResponseWriter, req *http.Request){
+	http.HandleFunc("/task/announce", func(res http.ResponseWriter, req *http.Request) {
 		webServiceHandler.Announce(res, req)
 	})
 
-	http.HandleFunc("/task/request", func(res http.ResponseWriter, req *http.Request){
+	http.HandleFunc("/task/request", func(res http.ResponseWriter, req *http.Request) {
 		webServiceHandler.Request(res, req)
 	})
 
-	http.HandleFunc("/task/task", func(res http.ResponseWriter, req *http.Request){
+	http.HandleFunc("/task/task", func(res http.ResponseWriter, req *http.Request) {
 		webServiceHandler.Task(res, req)
 	})
 
-	http.HandleFunc("/task/tasklist", func(res http.ResponseWriter, req *http.Request){
+	http.HandleFunc("/task/tasklist", func(res http.ResponseWriter, req *http.Request) {
 		webServiceHandler.TaskList(res, req)
 	})
 
 	http.ListenAndServe(":8081", nil)
 
 	return nil
-
 }

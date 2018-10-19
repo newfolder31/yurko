@@ -1,9 +1,11 @@
 package interfaces
 
 import (
+	"fmt"
+	"github.com/gorilla/schema"
 	"net/http"
-	"strconv"
 	"yurko/domains/task"
+	usecases "yurko/usecases/task"
 )
 
 type TaskInteractor interface {
@@ -21,39 +23,50 @@ type WebServiceHandler struct {
 func (handler *WebServiceHandler) Announce(writer http.ResponseWriter, request *http.Request) {
 	if err := request.ParseForm(); err != nil {
 		writer.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(writer, "Form parsing error : ", err)
 		return
 	}
 
-	userId, err := strconv.Atoi(request.FormValue("userId"))
-	description := request.FormValue("description")
-	//todo: validation
-
-	_, _ = handler.Interactor.CreateAnnounce(userId, description)
-
-	if err != nil {
-		writer.WriteHeader(http.StatusOK)
-	} else {
+	form := new(usecases.AnnounceForm)
+	if err := schema.NewDecoder().Decode(form, request.Form); err != nil {
 		writer.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(writer, "Parsing error : ", err)
+	} else {
+		fmt.Println(form.UserId, form.Description)
+		_, err = handler.Interactor.CreateAnnounce(form.UserId, form.Description)
+
+		if err != nil {
+			writer.WriteHeader(http.StatusBadRequest)
+			fmt.Fprint(writer, "Error during creating announce : ", err)
+		} else {
+			//todo: send id of new announce?
+			writer.WriteHeader(http.StatusOK)
+		}
 	}
 }
 
 func (handler *WebServiceHandler) Request(writer http.ResponseWriter, request *http.Request) {
 	if err := request.ParseForm(); err != nil {
 		writer.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(writer, "Form parsing error : ", err)
 		return
 	}
 
-	userId, err := strconv.Atoi(request.FormValue("userId"))
-	description := request.FormValue("description")
-	lawyerUserId, err := strconv.Atoi(request.FormValue("lawyerUserId"))
-	//todo: validation
-
-	_, _ = handler.Interactor.CreateRequest(userId, description, lawyerUserId)
-
-	if err != nil {
-		writer.WriteHeader(http.StatusOK)
-	} else {
+	form := new(usecases.RequestForm)
+	if err := schema.NewDecoder().Decode(form, request.Form); err != nil {
 		writer.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(writer, "Parsing error : ", err)
+	} else {
+		fmt.Println(form.UserId, form.Description)
+		_, err = handler.Interactor.CreateRequest(form.UserId, form.Description, form.LawyerId)
+
+		if err != nil {
+			writer.WriteHeader(http.StatusBadRequest)
+			fmt.Fprint(writer, "Error during creating request : ", err)
+		} else {
+			//todo: send id of new request?
+			writer.WriteHeader(http.StatusOK)
+		}
 	}
 }
 
