@@ -1,5 +1,7 @@
 package interfaces
 
+import "yurko/infrastructures"
+
 func GetCurrentUser(sessionId string) string {
-	return inMemorySession.Get(sessionId)
+	return infrastructures.InMemorySession.Get(sessionId)
 }

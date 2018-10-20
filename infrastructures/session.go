@@ -9,7 +9,7 @@ const (
 	COOKIE_SESSION_NAME = "sessionId"
 )
 
-var inMemorySession *Session
+var InMemorySession *Session
 
 type sessionData struct {
 	Email string

@@ -3,39 +3,12 @@ package daemons
 import (
 	"fmt"
 	"net/http"
+	"yurko/daemons/authDaemon"
 	"yurko/interfaces"
-	"yurko/usecases"
 )
 
 func Run() error {
-	interfaces.Initialize()
-	userInMemoryRepo := interfaces.NewUserInMemoryRepo()
-
-	registrationInteractor := new(usecases.RegistrationInteractor)
-	registrationInteractor.UserRepository = userInMemoryRepo
-
-	authorizationInteractor := new(usecases.AuthorizationInteractor)
-	authorizationInteractor.UserRepository = userInMemoryRepo
-
-	webserviceHandler := interfaces.WebserviceHandler{}
-	webserviceHandler.RegistrationInteractor = registrationInteractor
-	webserviceHandler.AuthorizationInteractor = authorizationInteractor
-
-	http.HandleFunc("/registration/fast", func(res http.ResponseWriter, req *http.Request) {
-		webserviceHandler.FastRegistration(res, req)
-	})
-
-	http.HandleFunc("/registration", func(res http.ResponseWriter, req *http.Request) {
-		webserviceHandler.Registration(res, req)
-	})
-
-	http.HandleFunc("/login", func(res http.ResponseWriter, req *http.Request) {
-		webserviceHandler.Login(res, req)
-	})
-
-	http.HandleFunc("/logout", func(res http.ResponseWriter, req *http.Request) {
-		webserviceHandler.Logout(res, req)
-	})
+	authDaemon.InitAuthModule()
 
 	http.Handle("/", indexHandler())
 

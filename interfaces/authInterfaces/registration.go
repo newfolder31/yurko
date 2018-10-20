@@ -1,10 +1,10 @@
-package interfaces
+package authInterfaces
 
 import (
 	"fmt"
 	"github.com/gorilla/schema"
 	"net/http"
-	"yurko/usecases"
+	"yurko/usecases/authUsecases"
 )
 
 func (webservice WebserviceHandler) FastRegistration(w http.ResponseWriter, r *http.Request) {
@@ -14,7 +14,7 @@ func (webservice WebserviceHandler) FastRegistration(w http.ResponseWriter, r *h
 		return
 	}
 
-	form := new(usecases.RegistrationForm)
+	form := new(authUsecases.RegistrationForm)
 	if err := schema.NewDecoder().Decode(form, r.Form); err != nil {
 		fmt.Fprintf(w, "some error in parse request params: %s!", err)
 		w.WriteHeader(http.StatusBadRequest)
@@ -39,7 +39,7 @@ func (webservice WebserviceHandler) Registration(w http.ResponseWriter, r *http.
 		return
 	}
 
-	form := new(usecases.RegistrationForm)
+	form := new(authUsecases.RegistrationForm)
 	if err := schema.NewDecoder().Decode(form, r.Form); err != nil {
 		fmt.Fprintf(w, "some error in parse request params: %s!", err)
 		w.WriteHeader(http.StatusBadRequest)

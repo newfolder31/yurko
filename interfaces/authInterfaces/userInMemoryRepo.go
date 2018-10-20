@@ -1,22 +1,22 @@
-package interfaces
+package authInterfaces
 
 import (
 	"math/rand"
 	"time"
-	"yurko/usecases"
+	"yurko/usecases/authUsecases"
 )
 
 type UserInMemoryRepo struct {
-	data map[int]usecases.User
+	data map[int]authUsecases.User
 }
 
 func NewUserInMemoryRepo() *UserInMemoryRepo {
 	userRepo := new(UserInMemoryRepo)
-	userRepo.data = make(map[int]usecases.User)
+	userRepo.data = make(map[int]authUsecases.User)
 	return userRepo
 }
 
-func (repo UserInMemoryRepo) Store(user *usecases.User) error {
+func (repo UserInMemoryRepo) Store(user *authUsecases.User) error {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	id := r.Int()
 	user.Id = id
@@ -25,12 +25,12 @@ func (repo UserInMemoryRepo) Store(user *usecases.User) error {
 	return nil
 }
 
-func (repo UserInMemoryRepo) FindById(id int) (*usecases.User, error) {
+func (repo UserInMemoryRepo) FindById(id int) (*authUsecases.User, error) {
 	user, _ := repo.data[id]
 	return &user, nil
 }
 
-func (repo UserInMemoryRepo) FindByEmail(email string) (*usecases.User, error) {
+func (repo UserInMemoryRepo) FindByEmail(email string) (*authUsecases.User, error) {
 	for _, value := range repo.data {
 		if value.Email == email {
 			return &value, nil
@@ -39,7 +39,7 @@ func (repo UserInMemoryRepo) FindByEmail(email string) (*usecases.User, error) {
 	return nil, nil
 }
 
-func (repo UserInMemoryRepo) FindByEmailAndPassword(email, password string) (*usecases.User, error) {
+func (repo UserInMemoryRepo) FindByEmailAndPassword(email, password string) (*authUsecases.User, error) {
 	for _, value := range repo.data {
 		if value.Email == email && value.Password == password {
 			return &value, nil

@@ -1,11 +1,11 @@
-package interfaces
+package authInterfaces
 
 import (
 	"fmt"
 	"github.com/gorilla/schema"
 	"net/http"
 	"yurko/infrastructures"
-	"yurko/usecases"
+	"yurko/usecases/authUsecases"
 )
 
 func (webservice WebserviceHandler) Login(w http.ResponseWriter, r *http.Request) {
@@ -15,7 +15,7 @@ func (webservice WebserviceHandler) Login(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	form := new(usecases.LoginForm)
+	form := new(authUsecases.LoginForm)
 	if err := schema.NewDecoder().Decode(form, r.Form); err != nil {
 		fmt.Fprintf(w, "some error in parse request params: %s!", err)
 		w.WriteHeader(http.StatusBadRequest)
@@ -24,7 +24,7 @@ func (webservice WebserviceHandler) Login(w http.ResponseWriter, r *http.Request
 			fmt.Fprintf(w, "authorization is failed: %s!", err)
 			w.WriteHeader(http.StatusBadRequest)
 		} else {
-			sessionId := inMemorySession.Init(form.Email)
+			sessionId := infrastructures.InMemorySession.Init(form.Email)
 
 			infrastructures.AddCookie(w, sessionId)
 			w.WriteHeader(http.StatusOK)
@@ -39,7 +39,7 @@ func (webservice WebserviceHandler) Logout(w http.ResponseWriter, r *http.Reques
 	//if r.Method == http.MethodPost {
 
 	cookie, _ := r.Cookie(infrastructures.COOKIE_SESSION_NAME)
-	inMemorySession.Delete(cookie.Value)
+	infrastructures.InMemorySession.Delete(cookie.Value)
 	infrastructures.DeleteCookie(w)
 
 	w.WriteHeader(http.StatusOK)
