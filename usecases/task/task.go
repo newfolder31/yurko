@@ -12,21 +12,33 @@ type TaskInteractor struct {
 }
 
 func (interactor *TaskInteractor) CreateAnnounce(userId int, description string) (*task.Task, error) {
-	//todo: validation // or not here?
 	//todo: is userId is client? (wait for client/lawyer impl)
-	//todo: error handling
 	announce := task.Task{Description: description}
-	_ = interactor.TaskRepository.Store(&announce)
+	err := interactor.TaskRepository.Store(&announce)
+	if err != nil {
+		return nil, err
+	}
 
 	relation := task.UserTaskRelation{UserId: userId, TaskId: announce.Id, Relation: task.OWNER, Profession: task.LAWYER}
-	_ = interactor.RelationRepository.Store(&relation)
+	err = interactor.RelationRepository.Store(&relation)
+	if err != nil {
+		return nil, err
+	}
 
 	return &announce, nil
 }
 
 func (interactor *TaskInteractor) CreateRequest(userId int, description string, lawyerUserId int) (*task.Task, error) {
-	request, _ := interactor.CreateAnnounce(userId, description)
-	_ = interactor.AssignTask(request, lawyerUserId)
+	request, err := interactor.CreateAnnounce(userId, description)
+	if err != nil {
+		return nil, err
+	}
+
+	err = interactor.AssignTask(request, lawyerUserId)
+	if err != nil {
+		return nil, err
+	}
+
 	return request, nil
 }
 
