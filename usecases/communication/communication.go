@@ -1,6 +1,12 @@
 package communication
 
+type Communication struct {
+	Id           int
+	RelationId   int
+	LawyerUserId int
+}
+
 type CommunicationRepository interface {
-	Store(relationId int, lawyerUserId int) (int, error)
-	FindById(id int) (int, int)
+	Store(*Communication) error
+	FindById(id int) *Communication
 }

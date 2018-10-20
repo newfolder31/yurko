@@ -1,20 +1,23 @@
 package interfaces
 
-import "yurko/domains/task"
+import (
+	"yurko/domains/task"
+	"yurko/usecases/communication"
+)
 
 var index = 0
 
 type MemoStorage struct {
 	Tasks          map[int]*task.Task
 	Relations      map[int]*task.UserTaskRelation
-	Communications map[int]int // relation, lawyer
+	Communications map[int]*communication.Communication
 }
 
 func NewMemoStorage() *MemoStorage {
 	storage := MemoStorage{}
 	storage.Tasks = make(map[int]*task.Task)
 	storage.Relations = make(map[int]*task.UserTaskRelation)
-	storage.Communications = make(map[int]int)
+	storage.Communications = make(map[int]*communication.Communication)
 
 	return &storage
 }
@@ -97,12 +100,19 @@ type CommunicationInMemoRepo struct {
 	Storage *MemoStorage
 }
 
-func (repo *CommunicationInMemoRepo) Store(relationId int, lawyerUserId int) (int, error) {
-	repo.Storage.Communications[relationId] = lawyerUserId
-	return 0, nil //todo
+func (repo *CommunicationInMemoRepo) Store(communication *communication.Communication) error {
+	defer func() { index++ }()
+
+	communication.Id = index
+	repo.Storage.Communications[index] = communication
+	return nil
 }
 
-func (repo *CommunicationInMemoRepo) FindById(id int) (int, int) {
-	return 0, 0
-	//todo
+func (repo *CommunicationInMemoRepo) FindById(id int) *communication.Communication {
+	comm, present := repo.Storage.Communications[id]
+	if present {
+		return comm
+	} else {
+		return nil
+	}
 }
