@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"yurko/daemons"
+	"yurko/src/daemons"
 )
 
 func main() {

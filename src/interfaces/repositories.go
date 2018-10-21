@@ -1,8 +1,8 @@
 package interfaces
 
 import (
-	"yurko/domains/task"
-	"yurko/usecases/communication"
+	"yurko/src/domains/task"
+	"yurko/src/usecases/communication"
 )
 
 var index = 0

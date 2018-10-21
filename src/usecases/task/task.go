@@ -1,8 +1,8 @@
 package task
 
 import (
-	"yurko/domains/task"
-	"yurko/usecases/communication"
+	"yurko/src/domains/task"
+	"yurko/src/usecases/communication"
 )
 
 type TaskInteractor struct {
@@ -45,7 +45,8 @@ func (interactor *TaskInteractor) CreateRequest(userId int, description string, 
 func (interactor *TaskInteractor) AssignTask(task *task.Task, lawyerUserId int) error {
 	//todo: is lawyerUserId a lawyer?
 	ownershipRelation := interactor.RelationRepository.FindOwnershipByTask(task)
-	_, err := interactor.CommunicationRepository.Store(ownershipRelation.Id, lawyerUserId)
+	comm := communication.Communication{RelationId:ownershipRelation.Id, LawyerUserId: lawyerUserId}
+	err := interactor.CommunicationRepository.Store(&comm)
 	return err
 }
 

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"github.com/gorilla/schema"
 	"net/http"
-	"yurko/domains/task"
-	usecases "yurko/usecases/task" //todo: resolve name overriding
+	"yurko/src/domains/task"
+	usecases "yurko/src/usecases/task" //todo: resolve name overriding
 )
 
 type TaskInteractor interface {

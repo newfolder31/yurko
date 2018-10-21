@@ -2,8 +2,8 @@ package daemons
 
 import (
 	"net/http"
-	"yurko/interfaces"
-	"yurko/usecases/task"
+	"yurko/src/interfaces"
+	"yurko/src/usecases/task"
 )
 
 func Run() error {
