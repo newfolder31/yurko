@@ -9,7 +9,7 @@ type TestIntervalRepository struct {
 	storage []*domains.Interval
 }
 
-func initTestIntervalRepository() *TestIntervalRepository {
+func InitTestIntervalRepository() *TestIntervalRepository {
 	repo := new(TestIntervalRepository)
 	repo.storage = make([]*domains.Interval, 0)
 	return repo

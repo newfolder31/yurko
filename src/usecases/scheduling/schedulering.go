@@ -72,18 +72,20 @@ func (current *Time) Compare(compared Time) int8 {
 // schedulerId, date
 //- получение рассписания на неделю, а лучше на слайс дат
 
-func (interactor *SchedulingInteractor) CreateNewScheduler(userId uint64, professionType string, days []Day) error {
+func (interactor *SchedulingInteractor) CreateNewScheduler(userId uint64, professionType string, days *[]Day) (*domains.Scheduler, error) {
 	scheduler := domains.Scheduler{UserId: userId, ProfessionType: professionType}
 	err := interactor.SchedulerRepository.Store(&scheduler) //TODO handle error!
 	if err != nil {
-		return errors.New("Function CreateNewScheduler! Unable create new Scheduler!")
+		return nil, errors.New("Function CreateNewScheduler! Unable create new Scheduler!")
 	}
-	for _, day := range days {
-		if err := interactor.dayToIntervals(scheduler.Id, day); err != nil {
-			return err //TODO Rewrap error
+	if days != nil {
+		for _, day := range *days {
+			if err := interactor.dayToIntervals(scheduler.Id, day); err != nil {
+				return nil, err //TODO Rewrap error
+			}
 		}
 	}
-	return nil
+	return nil, nil
 }
 
 func (interactor *SchedulingInteractor) getAllSchedulersByUserId(userId uint64) (*[]*domains.Scheduler, error) {

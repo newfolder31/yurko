@@ -9,7 +9,7 @@ type TestSchedulerRepository struct {
 	storage []*domains.Scheduler
 }
 
-func initTestSchedulerRepository() *TestSchedulerRepository {
+func InitTestSchedulerRepository() *TestSchedulerRepository {
 	repo := new(TestSchedulerRepository)
 	repo.storage = make([]*domains.Scheduler, 0)
 	return repo
