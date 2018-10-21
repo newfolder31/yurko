@@ -3,8 +3,8 @@ package daemons
 import (
 	"fmt"
 	"net/http"
-	"yurko/daemons/authDaemon"
-	"yurko/interfaces"
+	"daemons/authDaemon"
+	"interfaces"
 )
 
 func Run() error {

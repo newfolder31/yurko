@@ -2,9 +2,9 @@ package authDaemon
 
 import (
 	"net/http"
-	"yurko/infrastructures"
-	"yurko/interfaces/authInterfaces"
-	"yurko/usecases/authUsecases"
+	"infrastructures"
+	"interfaces/authInterfaces"
+	"usecases/authUsecases"
 )
 
 func InitAuthModule() {

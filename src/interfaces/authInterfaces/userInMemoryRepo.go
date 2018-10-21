@@ -3,7 +3,7 @@ package authInterfaces
 import (
 	"math/rand"
 	"time"
-	"yurko/usecases/authUsecases"
+	"usecases/authUsecases"
 )
 
 type UserInMemoryRepo struct {

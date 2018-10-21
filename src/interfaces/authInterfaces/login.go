@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/gorilla/schema"
 	"net/http"
-	"yurko/infrastructures"
-	"yurko/usecases/authUsecases"
+	"infrastructures"
+	"usecases/authUsecases"
 )
 
 func (webservice WebserviceHandler) Login(w http.ResponseWriter, r *http.Request) {

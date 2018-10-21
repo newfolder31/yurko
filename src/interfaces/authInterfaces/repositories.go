@@ -1,7 +1,7 @@
 package authInterfaces
 
 import (
-	"yurko/usecases/authUsecases"
+	"usecases/authUsecases"
 )
 
 type UserRepo interface {

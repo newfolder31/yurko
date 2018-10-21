@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/gorilla/schema"
 	"net/http"
-	"yurko/usecases/authUsecases"
+	"usecases/authUsecases"
 )
 
 func (webservice WebserviceHandler) FastRegistration(w http.ResponseWriter, r *http.Request) {
