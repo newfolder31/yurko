@@ -85,7 +85,7 @@ func (interactor *SchedulingInteractor) CreateNewScheduler(userId uint64, profes
 			}
 		}
 	}
-	return nil, nil
+	return &scheduler, nil
 }
 
 func (interactor *SchedulingInteractor) getAllSchedulersByUserId(userId uint64) (*[]*domains.Scheduler, error) {
@@ -117,7 +117,6 @@ func (interactor *SchedulingInteractor) BuildSchedulerForDate(schedulerId uint64
 	if err != nil {
 		return nil, err ////TODO Rewrap error
 	}
-
 	if len(*exceptionsSlice) != 0 {
 		sort.Slice(*exceptionsSlice, func(i, j int) bool {
 			return (*exceptionsSlice)[i].From < (*exceptionsSlice)[j].From
@@ -145,13 +144,25 @@ func sortIntervalSliceByDate(slice *[]*domains.Interval) {
 // для исключительных ситуаций передаються все рейжи этого дня и сохраняються как исключительные тайм ренжи
 // сохранять тайм ренжи можно за один раз,
 // про попытке сохранить в несколько раз ренжи, прошлые ренжи на этот день должны удаляться
-func (interactor *SchedulingInteractor) AddExceptionsInScheduler(schedulerId uint64, exceptions []ExceptionalDate) error {
+func (interactor *SchedulingInteractor) AddExceptionInScheduler(schedulerId uint64, exception *ExceptionalDate) error {
 	scheduler, _ := interactor.SchedulerRepository.FindById(schedulerId) // TODO handle error!
 	if scheduler != nil {
-		interactor.IntervalRepository.DeleteAllBySchedulerIdAndDate(schedulerId, exceptions[0].date)
-		for _, oneException := range exceptions {
-			interactor.storeIntervalsFromExceptions(schedulerId, oneException)
+		interactor.IntervalRepository.DeleteAllBySchedulerIdAndDate(schedulerId, exception.date)
+		interactor.storeIntervalsFromExceptions(schedulerId, exception)
+		return nil
+	}
+	errorMessage := "Scheduler with current id[" + string(schedulerId) + "] not found!"
+	return errors.New(errorMessage)
+}
+
+func (interactor *SchedulingInteractor) AddExceptionSliceInScheduler(schedulerId uint64, exceptions *[]ExceptionalDate) error {
+	scheduler, _ := interactor.SchedulerRepository.FindById(schedulerId) // TODO handle error!
+	if scheduler != nil {
+		for _, oneException := range *exceptions {
+			interactor.IntervalRepository.DeleteAllBySchedulerIdAndDate(schedulerId, oneException.date)
+			interactor.storeIntervalsFromExceptions(schedulerId, &oneException)
 		}
+		return nil
 	}
 	errorMessage := "Scheduler with current id[" + string(schedulerId) + "] not found!"
 	return errors.New(errorMessage)
@@ -203,7 +214,7 @@ func (interactor *SchedulingInteractor) dayToIntervals(schedulerId uint64, day D
 	return nil
 }
 
-func (interactor *SchedulingInteractor) storeIntervalsFromExceptions(schedulerId uint64, exception ExceptionalDate) error {
+func (interactor *SchedulingInteractor) storeIntervalsFromExceptions(schedulerId uint64, exception *ExceptionalDate) error {
 	for _, timeRange := range exception.ranges {
 		start := timeRange.start.timeInMinutes
 		end := timeRange.end.timeInMinutes
@@ -211,7 +222,7 @@ func (interactor *SchedulingInteractor) storeIntervalsFromExceptions(schedulerId
 		if err != nil {
 			return err
 		}
-		return interactor.IntervalRepository.Store(&interval)
+		interactor.IntervalRepository.Store(&interval)
 	}
 	return nil
 }
@@ -219,5 +230,5 @@ func (interactor *SchedulingInteractor) storeIntervalsFromExceptions(schedulerId
 //remove hours, minutes, seconds
 func cleanUpDate(date *time.Time) time.Time {
 	year, month, day := date.Date()
-	return time.Time{}.AddDate(year, int(month), day)
+	return time.Date(year, month, day, 0, 0, 0, 0, time.UTC)
 }

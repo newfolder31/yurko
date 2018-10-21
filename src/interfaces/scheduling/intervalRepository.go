@@ -94,9 +94,17 @@ func (repository *TestIntervalRepository) DeleteAllBySchedulerIdAndDay(id uint64
 }
 
 func (repository *TestIntervalRepository) DeleteAllBySchedulerIdAndDate(id uint64, date int64) error {
-	for i, item := range repository.storage {
+	for i := 0; i < len(repository.storage); i++ {
+		item := repository.storage[i]
 		if item.SchedulerId == id && item.Date == date {
-			repository.storage = append(repository.storage[:i], repository.storage[i+1:]...)
+			if len(repository.storage) > 1 {
+				copy(repository.storage[i:], repository.storage[i+1:])
+				repository.storage[len(repository.storage)-1] = nil
+				repository.storage = repository.storage[:len(repository.storage)-1]
+				i--
+			} else {
+				repository.storage = make([]*domains.Interval, 0)
+			}
 		}
 	}
 	return nil
