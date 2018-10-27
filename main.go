@@ -27,7 +27,7 @@ func main() {
 	//}
 	//
 	//fmt.Println(days)
-	//a.CreateNewScheduler(testUserId, "Jurist", days)
+	//a.CreateScheduler(testUserId, "Jurist", days)
 	//fmt.Println("--------------------------------------")
 	//
 	//for _, i := range intervalRepository.storage {

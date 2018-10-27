@@ -1,4 +1,4 @@
-package scheduling
+package repositories
 
 import (
 	domains "domains/scheduling"

@@ -2,7 +2,7 @@ package scheduling
 
 import (
 	domains "domains/scheduling"
-	"interfaces/scheduling"
+	repositories "interfaces/scheduling/repositories"
 	"sort"
 	"testing"
 	"time"
@@ -14,8 +14,8 @@ var preparedSaturdayDate time.Time = time.Date(2018, time.October, 20, 0, 0, 0, 
 var testUserId = uint64(1)
 
 func TestCreatingScheduler(t *testing.T) {
-	intervalRepository := scheduling.InitTestIntervalRepository()
-	schedulerRepository := scheduling.InitTestSchedulerRepository()
+	intervalRepository := repositories.InitTestIntervalRepository()
+	schedulerRepository := repositories.InitTestSchedulerRepository()
 	a := SchedulingInteractor{IntervalRepository: intervalRepository, SchedulerRepository: schedulerRepository}
 
 	//preparing test data
@@ -30,8 +30,8 @@ func TestCreatingScheduler(t *testing.T) {
 	}
 
 	//creating scheduler by userId, days and profession type - "Jurist",
-	if err, _ := a.CreateNewScheduler(testUserId, "Jurist", &days); err != nil {
-		t.Error("Error during creating new scheduler!")
+	if _, err := a.CreateScheduler(testUserId, "Jurist", &days); err != nil {
+		t.Error("Error during creating new scheduler!", err)
 	}
 
 	if resultScheduler, err := schedulerRepository.FindAllByUserId(testUserId); err != nil {
@@ -72,19 +72,19 @@ func sortIntervalSliceByDay(slice *[]*domains.Interval) {
 }
 
 func TestGetAllSchedulerByUserId(t *testing.T) {
-	intervalRepository := scheduling.InitTestIntervalRepository()
-	schedulerRepository := scheduling.InitTestSchedulerRepository()
+	intervalRepository := repositories.InitTestIntervalRepository()
+	schedulerRepository := repositories.InitTestSchedulerRepository()
 	a := SchedulingInteractor{IntervalRepository: intervalRepository, SchedulerRepository: schedulerRepository}
 
-	if _, err := a.CreateNewScheduler(testUserId, "Jurist", nil); err != nil {
+	if _, err := a.CreateScheduler(testUserId, "Jurist", nil); err != nil {
 		t.Error("Error during creating scheduler for Jurist", err)
 	}
 
-	if _, err := a.CreateNewScheduler(testUserId, "Test", nil); err != nil {
+	if _, err := a.CreateScheduler(testUserId, "Test", nil); err != nil {
 		t.Error("Error during creating scheduler for Test", err)
 	}
 
-	if _, err := a.CreateNewScheduler(testUserId, "Test2", nil); err != nil {
+	if _, err := a.CreateScheduler(testUserId, "Test2", nil); err != nil {
 		t.Error("Error during creating scheduler for Test2", err)
 	}
 
@@ -102,14 +102,14 @@ func TestGetAllSchedulerByUserId(t *testing.T) {
 }
 
 func TestAddExceptionsInScheduler(t *testing.T) {
-	intervalRepository := scheduling.InitTestIntervalRepository()
-	schedulerRepository := scheduling.InitTestSchedulerRepository()
+	intervalRepository := repositories.InitTestIntervalRepository()
+	schedulerRepository := repositories.InitTestSchedulerRepository()
 	a := SchedulingInteractor{IntervalRepository: intervalRepository, SchedulerRepository: schedulerRepository}
 
 	//creating scheduler by userId, days and profession type - "Jurist",
-	scheduler, err := a.CreateNewScheduler(testUserId, "Jurist", nil)
+	scheduler, err := a.CreateScheduler(testUserId, "Jurist", nil)
 	if err != nil {
-		t.Error("Error during creating new scheduler!")
+		t.Error("Error during creating new scheduler!", err)
 	}
 
 	//-----------Part 1-----------
@@ -206,8 +206,8 @@ func TestAddExceptionsInScheduler(t *testing.T) {
 }
 
 func Test_BuildSchedulerForDate_forRegularDay(t *testing.T) {
-	intervalRepository := scheduling.InitTestIntervalRepository()
-	schedulerRepository := scheduling.InitTestSchedulerRepository()
+	intervalRepository := repositories.InitTestIntervalRepository()
+	schedulerRepository := repositories.InitTestSchedulerRepository()
 	a := SchedulingInteractor{IntervalRepository: intervalRepository, SchedulerRepository: schedulerRepository}
 
 	days := make([]Day, 0, 1)
@@ -224,7 +224,7 @@ func Test_BuildSchedulerForDate_forRegularDay(t *testing.T) {
 	day, _ := InitDay(6, ranges) // 6 - it's Saturday
 	days = append(days, day)
 
-	scheduler, err := a.CreateNewScheduler(testUserId, "Test", &days)
+	scheduler, err := a.CreateScheduler(testUserId, "Test", &days)
 	if err != nil {
 		t.Error("Error during creating scheduler: ", err)
 	}
@@ -261,8 +261,8 @@ func Test_BuildSchedulerForDate_forRegularDay(t *testing.T) {
 }
 
 func Test_BuildSchedulerForDate_forExceptionalDate(t *testing.T) {
-	intervalRepository := scheduling.InitTestIntervalRepository()
-	schedulerRepository := scheduling.InitTestSchedulerRepository()
+	intervalRepository := repositories.InitTestIntervalRepository()
+	schedulerRepository := repositories.InitTestSchedulerRepository()
 	a := SchedulingInteractor{IntervalRepository: intervalRepository, SchedulerRepository: schedulerRepository}
 
 	days := make([]Day, 0, 1)
@@ -279,7 +279,7 @@ func Test_BuildSchedulerForDate_forExceptionalDate(t *testing.T) {
 	day, _ := InitDay(6, ranges) // 6 - it's Saturday
 	days = append(days, day)
 
-	scheduler, err := a.CreateNewScheduler(testUserId, "Test", &days)
+	scheduler, err := a.CreateScheduler(testUserId, "Test", &days)
 	if err != nil {
 		t.Error("Error during creating scheduler: ", err)
 	}
@@ -318,8 +318,8 @@ func Test_BuildSchedulerForDate_forExceptionalDate(t *testing.T) {
 }
 
 func Test_UpdateDayIntervals(t *testing.T) {
-	intervalRepository := scheduling.InitTestIntervalRepository()
-	schedulerRepository := scheduling.InitTestSchedulerRepository()
+	intervalRepository := repositories.InitTestIntervalRepository()
+	schedulerRepository := repositories.InitTestSchedulerRepository()
 	a := SchedulingInteractor{IntervalRepository: intervalRepository, SchedulerRepository: schedulerRepository}
 
 	days := make([]Day, 0, 1)
@@ -336,7 +336,7 @@ func Test_UpdateDayIntervals(t *testing.T) {
 	day, _ := InitDay(6, ranges) // 6 - it's Saturday
 	days = append(days, day)
 
-	scheduler, err := a.CreateNewScheduler(testUserId, "Test", &days)
+	scheduler, err := a.CreateScheduler(testUserId, "Test", &days)
 	if err != nil {
 		t.Error("Error during creating scheduler: ", err)
 	}
