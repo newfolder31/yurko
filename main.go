@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"sort"
 	"time"
 )
 
@@ -39,27 +38,26 @@ func main() {
 	//TODO end case #1
 
 	//TODO test code
-	var a []*Test
-	a1 := Test{a: 2}
-	a2 := Test{a: 1}
-	a3 := Test{a: 4}
-	a4 := Test{a: 3}
-	a5 := Test{a: 5}
-	a = append(a, &a1)
-	a = append(a, &a2)
-	a = append(a, &a3)
-	a = append(a, &a4)
-	a = append(a, &a5)
-	p := &a
-	sort.Slice(*p, func(i, j int) bool {
-		return (*p)[i].a < (*p)[j].a
-	})
-
-	fmt.Println(len(*p))
+	//var a []*Test
+	//a1 := Test{a: 2}
+	//a2 := Test{a: 1}
+	//a3 := Test{a: 4}
+	//a4 := Test{a: 3}
+	//a5 := Test{a: 5}
+	//a = append(a, &a1)
+	//a = append(a, &a2)
+	//a = append(a, &a3)
+	//a = append(a, &a4)
+	//a = append(a, &a5)
+	//p := &a
+	//sort.Slice(*p, func(i, j int) bool {
+	//	return (*p)[i].a < (*p)[j].a
+	//})
+	//
+	//fmt.Println(len(*p))
 	//for _, i := range a {
 	//	fmt.Println(i)
-	//}
-
+	//}\
 }
 
 type Test struct {
