@@ -43,6 +43,7 @@ type IntervalRepository interface {
 	Store(interval *Interval) error
 	Update(interval *Interval) error
 	Delete(id uint64) error
+	DeleteAllBySchedulerId(schedulerId uint64) error
 	DeleteAllBySchedulerIdAndDay(schedulerId uint64, weekDay uint8) error
 	DeleteAllBySchedulerIdAndDate(schedulerId uint64, date int64) error
 }

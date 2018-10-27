@@ -53,10 +53,17 @@ func (repository *TestSchedulerRepository) Update(scheduler *domains.Scheduler) 
 }
 
 func (repository *TestSchedulerRepository) Delete(id uint64) error {
-	for i, item := range repository.storage {
+	for i := 0; i < len(repository.storage); i++ {
+		item := repository.storage[i]
 		if item.Id == id {
-			repository.storage = append(repository.storage[:i], repository.storage[i+1:]...)
-			return nil
+			if len(repository.storage) > 1 {
+				copy(repository.storage[i:], repository.storage[i+1:])
+				repository.storage[len(repository.storage)-1] = nil
+				repository.storage = repository.storage[:len(repository.storage)-1]
+				i--
+			} else {
+				repository.storage = make([]*domains.Scheduler, 0)
+			}
 		}
 	}
 	return nil

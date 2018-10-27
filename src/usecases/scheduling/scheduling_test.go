@@ -8,11 +8,12 @@ import (
 	"time"
 )
 
-var preparedDate time.Time = time.Date(2018, time.October, 20, 0, 0, 0, 0, time.UTC)
+var preparedFridayDate time.Time = time.Date(2018, time.October, 19, 0, 0, 0, 0, time.UTC)   // Friday
+var preparedSaturdayDate time.Time = time.Date(2018, time.October, 20, 0, 0, 0, 0, time.UTC) // Saturday
+
+var testUserId = uint64(1)
 
 func TestCreatingScheduler(t *testing.T) {
-	testUserId := uint64(1)
-
 	intervalRepository := scheduling.InitTestIntervalRepository()
 	schedulerRepository := scheduling.InitTestSchedulerRepository()
 	a := SchedulingInteractor{IntervalRepository: intervalRepository, SchedulerRepository: schedulerRepository}
@@ -71,8 +72,6 @@ func sortIntervalSliceByDay(slice *[]*domains.Interval) {
 }
 
 func TestGetAllSchedulerByUserId(t *testing.T) {
-	testUserId := uint64(1)
-
 	intervalRepository := scheduling.InitTestIntervalRepository()
 	schedulerRepository := scheduling.InitTestSchedulerRepository()
 	a := SchedulingInteractor{IntervalRepository: intervalRepository, SchedulerRepository: schedulerRepository}
@@ -103,8 +102,6 @@ func TestGetAllSchedulerByUserId(t *testing.T) {
 }
 
 func TestAddExceptionsInScheduler(t *testing.T) {
-	testUserId := uint64(1)
-
 	intervalRepository := scheduling.InitTestIntervalRepository()
 	schedulerRepository := scheduling.InitTestSchedulerRepository()
 	a := SchedulingInteractor{IntervalRepository: intervalRepository, SchedulerRepository: schedulerRepository}
@@ -128,7 +125,7 @@ func TestAddExceptionsInScheduler(t *testing.T) {
 		}
 	}
 
-	exception := ExceptionalDate{date: preparedDate.Unix(), ranges: timeRanges}
+	exception := ExceptionalDate{date: preparedSaturdayDate.Unix(), ranges: timeRanges}
 	if err := a.AddExceptionInScheduler(scheduler.Id, &exception); err != nil {
 		t.Error("Error during adding exceptions!")
 	}
@@ -153,8 +150,8 @@ func TestAddExceptionsInScheduler(t *testing.T) {
 	}
 
 	//-----------Part 2-----------
-	//Test deleting old exceptions for the same date
-	timeRanges = make([]TimeRange, 0, 2)
+	//Test overriding old exceptions for the same date
+	timeRanges = make([]TimeRange, 0, 2) //timeRanges - ranges [[13:00-13:30], [14:00-14:30]]
 	for i := 13; i < 15; i++ {
 		start, _ := InitTime(uint16(i), 0)
 		end, _ := InitTime(uint16(i), 30)
@@ -165,7 +162,7 @@ func TestAddExceptionsInScheduler(t *testing.T) {
 		}
 	}
 
-	exception = ExceptionalDate{date: preparedDate.Unix(), ranges: timeRanges}
+	exception = ExceptionalDate{date: preparedSaturdayDate.Unix(), ranges: timeRanges}
 	if err := a.AddExceptionInScheduler(scheduler.Id, &exception); err != nil {
 		t.Error("Error during adding exceptions!")
 	}
@@ -188,11 +185,27 @@ func TestAddExceptionsInScheduler(t *testing.T) {
 			}
 		}
 	}
+
+	//-----------Part 3-----------
+	//Test deleting exceptions for specified day
+	exception = ExceptionalDate{date: preparedSaturdayDate.Unix()}
+
+	if err := a.AddExceptionInScheduler(scheduler.Id, &exception); err != nil {
+		t.Error("Error during adding exceptions!")
+	}
+
+	if result, err := a.IntervalRepository.FindAllBySchedulerId(scheduler.Id, ""); err != nil {
+		t.Error("Error during finding all by scheduler id", err)
+		return
+	} else {
+		if len(*result) != 0 {
+			t.Error("Invalid result of getting all intervals by scheduler id",
+				"schedulers slice result:", len(*result), " - expected result: 0")
+		}
+	}
 }
 
 func Test_BuildSchedulerForDate_forRegularDay(t *testing.T) {
-	testUserId := uint64(1)
-
 	intervalRepository := scheduling.InitTestIntervalRepository()
 	schedulerRepository := scheduling.InitTestSchedulerRepository()
 	a := SchedulingInteractor{IntervalRepository: intervalRepository, SchedulerRepository: schedulerRepository}
@@ -216,7 +229,7 @@ func Test_BuildSchedulerForDate_forRegularDay(t *testing.T) {
 		t.Error("Error during creating scheduler: ", err)
 	}
 
-	if result, err := a.BuildSchedulerForDate(scheduler.Id, preparedDate); err == nil {
+	if result, err := a.BuildSchedulerForDate(scheduler.Id, preparedSaturdayDate); err == nil {
 		if len(*result) != 3 {
 			t.Error("Expected slice size: 3, resulted: ", len(*result))
 		} else {
@@ -248,8 +261,6 @@ func Test_BuildSchedulerForDate_forRegularDay(t *testing.T) {
 }
 
 func Test_BuildSchedulerForDate_forExceptionalDate(t *testing.T) {
-	testUserId := uint64(1)
-
 	intervalRepository := scheduling.InitTestIntervalRepository()
 	schedulerRepository := scheduling.InitTestSchedulerRepository()
 	a := SchedulingInteractor{IntervalRepository: intervalRepository, SchedulerRepository: schedulerRepository}
@@ -284,12 +295,12 @@ func Test_BuildSchedulerForDate_forExceptionalDate(t *testing.T) {
 		}
 	}
 
-	exception := ExceptionalDate{date: preparedDate.Unix(), ranges: timeRanges}
+	exception := ExceptionalDate{date: preparedSaturdayDate.Unix(), ranges: timeRanges}
 	if err := a.AddExceptionInScheduler(scheduler.Id, &exception); err != nil {
 		t.Error("Error during adding exceptions!")
 	}
 
-	if result, err := a.BuildSchedulerForDate(scheduler.Id, preparedDate); err == nil {
+	if result, err := a.BuildSchedulerForDate(scheduler.Id, preparedSaturdayDate); err == nil {
 		if len(*result) != 2 {
 			t.Error("Expected slice size: 2, resulted: ", len(*result))
 		} else {
@@ -303,5 +314,127 @@ func Test_BuildSchedulerForDate_forExceptionalDate(t *testing.T) {
 		}
 	} else {
 		t.Error("Error during building scheduler: ", err)
+	}
+}
+
+func Test_UpdateDayIntervals(t *testing.T) {
+	intervalRepository := scheduling.InitTestIntervalRepository()
+	schedulerRepository := scheduling.InitTestSchedulerRepository()
+	a := SchedulingInteractor{IntervalRepository: intervalRepository, SchedulerRepository: schedulerRepository}
+
+	days := make([]Day, 0, 1)
+
+	rangesDate := [][]uint16{{8, 0, 8, 30}, {9, 0, 9, 30}, {10, 0, 10, 30}}
+	ranges := make([]TimeRange, 0, 3)
+
+	for _, day := range rangesDate {
+		start, _ := InitTime(day[0], day[1])
+		end, _ := InitTime(day[2], day[3])
+		timeRange, _ := InitTimeRange(start, end)
+		ranges = append(ranges, timeRange)
+	}
+	day, _ := InitDay(6, ranges) // 6 - it's Saturday
+	days = append(days, day)
+
+	scheduler, err := a.CreateNewScheduler(testUserId, "Test", &days)
+	if err != nil {
+		t.Error("Error during creating scheduler: ", err)
+	}
+
+	//-----------Part 1-----------
+	//Simple intervals update
+	day, _ = InitDay(uint8(time.Friday), ranges) // 5 - it's Friday
+	if err := a.UpdateDayIntervals(scheduler.Id, day); err != nil {
+		t.Error("Error during update day intervals: ", err)
+	}
+
+	if result, err := a.BuildSchedulerForDate(scheduler.Id, preparedFridayDate); err != nil {
+		t.Error("Error during building scheduler: ", err)
+	} else {
+		if len(*result) != len(ranges) {
+			t.Error("Invalid result of getting all intervals by scheduler id",
+				"schedulers slice result:", len(*result))
+		}
+		//resulted interval not save sequence after FindAllBySchedulerId
+		sortIntervalSliceByDay(result)
+		for i := 0; i < len(ranges); i++ {
+			if (*result)[i].From != ranges[i].start.timeInMinutes {
+				t.Error("Invalid interval. Expected: ",
+					ranges[i].start.timeInMinutes, " - ", ranges[i].end.timeInMinutes,
+					"resulted: ", (*result)[i].From, " - ", (*result)[i].To)
+			}
+		}
+	}
+
+	//check for latest intervals is presents
+	if result, err := a.BuildSchedulerForDate(scheduler.Id, preparedSaturdayDate); err != nil {
+		t.Error("Error during building scheduler: ", err)
+	} else {
+		if len(*result) != len(ranges) {
+			t.Error("Invalid result of getting all intervals by scheduler id",
+				"schedulers slice result:", len(*result))
+		}
+		//resulted interval not save sequence after FindAllBySchedulerId
+		sortIntervalSliceByDay(result)
+		for i := 0; i < len(ranges); i++ {
+			if (*result)[i].From != ranges[i].start.timeInMinutes {
+				t.Error("Invalid interval. Expected: ",
+					ranges[i].start.timeInMinutes, " - ", ranges[i].end.timeInMinutes,
+					"resulted: ", (*result)[i].From, " - ", (*result)[i].To)
+			}
+		}
+	}
+
+	//-----------Part 2-----------
+	//Overriding intervals
+	rangesDate = [][]uint16{{10, 0, 11, 30}, {12, 30, 14, 30}}
+	ranges = make([]TimeRange, 0, 2)
+
+	for _, day := range rangesDate {
+		start, _ := InitTime(day[0], day[1])
+		end, _ := InitTime(day[2], day[3])
+		timeRange, _ := InitTimeRange(start, end)
+		ranges = append(ranges, timeRange)
+	}
+	day, _ = InitDay(uint8(time.Saturday), ranges)
+
+	if err := a.UpdateDayIntervals(scheduler.Id, day); err != nil {
+		t.Error("Error during update day intervals: ", err)
+	}
+
+	if result, err := a.BuildSchedulerForDate(scheduler.Id, preparedSaturdayDate); err != nil {
+		t.Error("Error during building scheduler: ", err)
+	} else {
+		if len(*result) != len(ranges) {
+			t.Error("Invalid result of getting all intervals by scheduler id",
+				"schedulers slice result:", len(*result))
+		}
+		//resulted interval not save sequence after FindAllBySchedulerId
+		sortIntervalSliceByDay(result)
+		for i := 0; i < len(ranges); i++ {
+			if (*result)[i].From != ranges[i].start.timeInMinutes {
+				t.Error("Invalid interval. Expected: ",
+					ranges[i].start.timeInMinutes, " - ", ranges[i].end.timeInMinutes,
+					"resulted: ", (*result)[i].From, " - ", (*result)[i].To)
+			}
+		}
+	}
+
+	//-----------Part 2-----------
+	//Deleting intervals
+	ranges = make([]TimeRange, 0, 0)
+	day, _ = InitDay(uint8(time.Saturday), ranges)
+
+	if err := a.UpdateDayIntervals(scheduler.Id, day); err != nil {
+		t.Error("Error during update day intervals: ", err)
+	}
+
+	if result, err := a.BuildSchedulerForDate(scheduler.Id, preparedSaturdayDate); err != nil {
+		t.Error("Error during building scheduler: ", err)
+	} else {
+		if len(*result) != len(ranges) {
+			t.Error("Invalid result of getting all intervals by scheduler id",
+				"schedulers slice result:", len(*result), " - expected result: ", len(ranges))
+		}
 	}
 }

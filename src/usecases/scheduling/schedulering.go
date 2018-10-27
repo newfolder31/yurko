@@ -163,7 +163,7 @@ func (interactor *SchedulingInteractor) AddExceptionSliceInScheduler(schedulerId
 	scheduler, _ := interactor.SchedulerRepository.FindById(schedulerId) // TODO handle error!
 	if scheduler != nil && exceptions != nil {
 		for _, oneException := range *exceptions {
-			interactor.IntervalRepository.DeleteAllBySchedulerIdAndDate(schedulerId, oneException.date)
+			interactor.IntervalRepository.DeleteAllBySchedulerIdAndDate(schedulerId, oneException.date) // DeleteDateExceptions
 			if oneException.ranges != nil {
 				interactor.storeIntervalsFromExceptions(schedulerId, &oneException)
 			}
@@ -174,16 +174,11 @@ func (interactor *SchedulingInteractor) AddExceptionSliceInScheduler(schedulerId
 	return errors.New(errorMessage)
 }
 
-//with all interval
-func RemoveScheduler(schedulerId uint64) error {
-	return nil
-}
-
 //update all ranges in weekDay in one action
 func (interactor *SchedulingInteractor) UpdateDayIntervals(schedulerId uint64, day Day) error {
 	//удалить прошлые за день, вставить новые
 	//TODO добавить проверку на то, что количество, интервалов не равно нулю,
-	//TODO в случае если всётаки равно нулю, то удалить все интервалы за указанную дату и допилить на это тесты
+	//TODO в случае если всё-таки равно нулю, то удалить все интервалы за указанную дату и допилить на это тесты
 	scheduler, _ := interactor.SchedulerRepository.FindById(schedulerId)
 	if scheduler == nil {
 		return errors.New("Scheduler with current id-" + string(schedulerId) + " is not found!")
@@ -197,15 +192,23 @@ func (interactor *SchedulingInteractor) UpdateDayIntervals(schedulerId uint64, d
 	return nil
 }
 
-func (interactor *SchedulingInteractor) DeleteDayIntervals(schedulerId uint64, day uint8) error {
-	if err := interactor.IntervalRepository.DeleteAllBySchedulerIdAndDay(schedulerId, day); err != nil {
-		return err //TODO Rewrap error
+//with all interval
+func (interactor *SchedulingInteractor) DeleteScheduler(schedulerId uint64) error {
+	if err := interactor.IntervalRepository.DeleteAllBySchedulerId(schedulerId); err != nil {
+		return err
+	}
+	if err := interactor.SchedulerRepository.Delete(schedulerId); err != nil {
+		return err
 	}
 	return nil
 }
 
-func (interactor *SchedulingInteractor) DeleteDayExceptions(schedulerId uint64, date time.Time) error {
-	return nil
+func (interactor *SchedulingInteractor) DeleteDayIntervals(schedulerId uint64, day uint8) error {
+	return interactor.IntervalRepository.DeleteAllBySchedulerIdAndDay(schedulerId, day)
+}
+
+func (interactor *SchedulingInteractor) DeleteDateExceptions(schedulerId uint64, date time.Time) error {
+	return interactor.IntervalRepository.DeleteAllBySchedulerIdAndDate(schedulerId, date.Unix())
 }
 
 func (interactor *SchedulingInteractor) storeIntervalsFromDay(schedulerId uint64, day Day) error {

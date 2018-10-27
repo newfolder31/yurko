@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"time"
+	"usecases/scheduling"
 )
 
 func main() {
@@ -58,6 +59,11 @@ func main() {
 	//for _, i := range a {
 	//	fmt.Println(i)
 	//}\
+
+	b := make([]scheduling.TimeRange, 2)
+	for _, c := range b {
+		fmt.Println(c)
+	}
 }
 
 type Test struct {
