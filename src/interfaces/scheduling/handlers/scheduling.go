@@ -1,10 +1,19 @@
 package handlers
 
 import (
-	"interfaces"
+	domains "domains/scheduling"
 	"net/http"
+	usecases "usecases/scheduling"
 )
 
-func (webservice *WebserviceHandler) CreateScheduler(w http.ResponseWriter, r *http.Request) {
-	//webservice.
+type SchedulingInteractor interface {
+	CreateScheduler(userId uint64, professionType string, days *[]usecases.Day) (*domains.Scheduler, error)
+}
+
+type ScheduleWebserviceHandler struct {
+	SchedulingInteractor SchedulingInteractor
+}
+
+func CreateScheduler(w http.ResponseWriter, r *http.Request) {
+
 }
