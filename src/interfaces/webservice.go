@@ -1,10 +1,9 @@
 package interfaces
 
 import (
-	schedulingDomains "domains/scheduling"
-	schedulingUsecases "usecases/scheduling"
+	"interfaces/scheduling/handlers"
 )
 
 type WebserviceHandler struct {
-	SchedulingInteractor SchedulingInteractor
+	ScheduleWebserviceHandler handlers.ScheduleWebserviceHandler
 }

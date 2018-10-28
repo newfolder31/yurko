@@ -12,23 +12,28 @@ type SchedulingInteractor struct {
 	IntervalRepository  domains.IntervalRepository
 }
 
-type Time struct {
-	timeInMinutes uint16
-}
-
-type TimeRange struct {
-	start Time
-	end   Time
-}
-
 type Day struct {
-	weekDay uint8
-	ranges  []TimeRange
+	WeekDay   uint8      `json:"weekDay"`
+	Intervals []Interval `json:"intervals"`
 }
 
 type ExceptionalDate struct {
-	date   int64
-	ranges []TimeRange
+	date      int64
+	Intervals []Interval
+}
+
+type Interval struct {
+	Start Time `json:"start"`
+	End   Time `json:"end"`
+}
+
+type Time struct {
+	Hours   uint16 `json:"hours"`
+	Minutes uint16 `json:"minutes"`
+}
+
+func (t *Time) GetTimeInMinutes() uint16 {
+	return uint16((t.Hours)*60 + t.Minutes)
 }
 
 func InitTime(hours, minutes uint16) (Time, error) {
@@ -37,27 +42,27 @@ func InitTime(hours, minutes uint16) (Time, error) {
 	} else if 0 > minutes || minutes > 59 {
 		return Time{}, errors.New("Invalid minutes value [" + string(minutes) + "]")
 	}
-	return Time{timeInMinutes: (hours)*60 + minutes}, nil
+	return Time{Hours: hours, Minutes: minutes}, nil
 }
 
-func InitTimeRange(start, end Time) (TimeRange, error) {
+func InitTimeRange(start, end Time) (Interval, error) {
 	if end.Compare(start) < 1 {
-		return TimeRange{}, errors.New("Invalid time range. End time not later then start time!")
+		return Interval{}, errors.New("Invalid time range. End time not later then Start time!")
 	}
-	return TimeRange{start: start, end: end}, nil
+	return Interval{Start: start, End: end}, nil
 }
 
-func InitDay(day uint8, ranges []TimeRange) (Day, error) {
+func InitDay(day uint8, ranges []Interval) (Day, error) {
 	if day < 0 || day > 6 {
-		return Day{}, errors.New("Invalid weekDay number [" + string(day) + "]")
+		return Day{}, errors.New("Invalid WeekDay number [" + string(day) + "]")
 	}
-	return Day{weekDay: day, ranges: ranges}, nil
+	return Day{WeekDay: day, Intervals: ranges}, nil
 }
 
 func (current *Time) Compare(compared Time) int8 {
-	if current.timeInMinutes > compared.timeInMinutes {
+	if current.GetTimeInMinutes() > compared.GetTimeInMinutes() {
 		return 1
-	} else if current.timeInMinutes < compared.timeInMinutes {
+	} else if current.GetTimeInMinutes() < compared.GetTimeInMinutes() {
 		return -1
 	}
 	return 0
@@ -79,7 +84,7 @@ func (interactor *SchedulingInteractor) CreateScheduler(userId uint64, professio
 	return &scheduler, nil
 }
 
-func (interactor *SchedulingInteractor) getAllSchedulersByUserId(userId uint64) (*[]*domains.Scheduler, error) {
+func (interactor *SchedulingInteractor) GetAllSchedulersByUserId(userId uint64) (*[]*domains.Scheduler, error) {
 	if schedulers, err := interactor.SchedulerRepository.FindAllByUserId(userId); err != nil {
 		return nil, err ////TODO Rewrap error
 	} else {
@@ -135,7 +140,7 @@ func (interactor *SchedulingInteractor) AddExceptionInScheduler(schedulerId uint
 	scheduler, _ := interactor.SchedulerRepository.FindById(schedulerId) // TODO handle error!
 	if scheduler != nil && exception != nil {
 		interactor.IntervalRepository.DeleteAllBySchedulerIdAndDate(schedulerId, exception.date)
-		if exception.ranges != nil {
+		if exception.Intervals != nil {
 			interactor.storeIntervalsFromExceptions(schedulerId, exception)
 		}
 		return nil
@@ -149,7 +154,7 @@ func (interactor *SchedulingInteractor) AddExceptionSliceInScheduler(schedulerId
 	if scheduler != nil && exceptions != nil {
 		for _, oneException := range *exceptions {
 			interactor.IntervalRepository.DeleteAllBySchedulerIdAndDate(schedulerId, oneException.date) // DeleteDateExceptions
-			if oneException.ranges != nil {
+			if oneException.Intervals != nil {
 				interactor.storeIntervalsFromExceptions(schedulerId, &oneException)
 			}
 		}
@@ -164,7 +169,7 @@ func (interactor *SchedulingInteractor) UpdateDayIntervals(schedulerId uint64, d
 	if scheduler == nil {
 		return errors.New("Scheduler with current id-" + string(schedulerId) + " is not found!")
 	}
-	if err := interactor.DeleteDayIntervals(schedulerId, day.weekDay); err != nil {
+	if err := interactor.DeleteDayIntervals(schedulerId, day.WeekDay); err != nil {
 		return err //TODO Rewrap error
 	}
 	if err := interactor.storeIntervalsFromDay(schedulerId, day); err != nil {
@@ -192,10 +197,10 @@ func (interactor *SchedulingInteractor) DeleteDateExceptions(schedulerId uint64,
 }
 
 func (interactor *SchedulingInteractor) storeIntervalsFromDay(schedulerId uint64, day Day) error {
-	for _, timeRange := range day.ranges {
-		start := timeRange.start.timeInMinutes
-		end := timeRange.end.timeInMinutes
-		interval, err := domains.InitInterval(schedulerId, int64(0), start, end, day.weekDay)
+	for _, timeRange := range day.Intervals {
+		start := timeRange.Start.GetTimeInMinutes()
+		end := timeRange.End.GetTimeInMinutes()
+		interval, err := domains.InitInterval(schedulerId, int64(0), start, end, day.WeekDay)
 		if err != nil {
 			return err
 		}
@@ -205,9 +210,9 @@ func (interactor *SchedulingInteractor) storeIntervalsFromDay(schedulerId uint64
 }
 
 func (interactor *SchedulingInteractor) storeIntervalsFromExceptions(schedulerId uint64, exception *ExceptionalDate) error {
-	for _, timeRange := range exception.ranges {
-		start := timeRange.start.timeInMinutes
-		end := timeRange.end.timeInMinutes
+	for _, timeRange := range exception.Intervals {
+		start := timeRange.Start.GetTimeInMinutes()
+		end := timeRange.End.GetTimeInMinutes()
 		interval, err := domains.InitInterval(schedulerId, exception.date, start, end, 1)
 		if err != nil {
 			return err

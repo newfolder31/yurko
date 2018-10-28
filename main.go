@@ -1,9 +1,9 @@
 package main
 
 import (
+	"daemons"
 	"fmt"
 	"time"
-	"usecases/scheduling"
 )
 
 func main() {
@@ -60,12 +60,9 @@ func main() {
 	//	fmt.Println(i)
 	//}\
 
-	b := make([]scheduling.TimeRange, 2)
-	for _, c := range b {
-		fmt.Println(c)
-	}
-}
-
-type Test struct {
-	a int
+	//b := make([]scheduling.TimeRange, 2)
+	//for _, c := range b {
+	//	fmt.Println(c)
+	//}
+	daemons.Run()
 }

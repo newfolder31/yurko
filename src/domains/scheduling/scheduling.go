@@ -2,27 +2,6 @@ package scheduling
 
 import "errors"
 
-/** TODO Enums example
-// A Month specifies a month of the year (January = 1, ...).
-type Month int
-
-const (
-	January Month = 1 + iota
-	February
-	March
-	April
-	May
-	June
-	July
-	August
-	September
-	October
-	November
-	December
-)
-*/
-
-//todo it's mock for development
 const (
 	PROFFESSIONAL_TYPE_LAWYERS = iota
 )
