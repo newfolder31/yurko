@@ -1,11 +1,11 @@
-package authInterfaces
+package userInterfaces
 
 import (
 	"fmt"
 	"github.com/gorilla/schema"
 	"net/http"
 	"infrastructures"
-	"usecases/authUsecases"
+	"usecases/userUsecases"
 )
 
 func (webservice WebserviceHandler) Login(w http.ResponseWriter, r *http.Request) {
@@ -15,7 +15,7 @@ func (webservice WebserviceHandler) Login(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	form := new(authUsecases.LoginForm)
+	form := new(userUsecases.LoginForm)
 	if err := schema.NewDecoder().Decode(form, r.Form); err != nil {
 		fmt.Fprintf(w, "some error in parse request params: %s!", err)
 		w.WriteHeader(http.StatusBadRequest)

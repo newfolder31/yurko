@@ -1,28 +1,24 @@
-package authDaemon
+package userDaemon
 
 import (
+	"interfaces/userInterfaces"
 	"net/http"
-	"infrastructures"
-	"interfaces/authInterfaces"
-	"usecases/authUsecases"
+	"usecases/userUsecases"
 )
 
 func InitAuthModule() {
-	//initialize session
-	infrastructures.InMemorySession = infrastructures.NewSession()
-
 	//initialize repositories
-	userInMemoryRepo := authInterfaces.NewUserInMemoryRepo()
+	userInMemoryRepo := userInterfaces.NewUserInMemoryRepo()
 
 	//initialize interceptors
-	registrationInteractor := new(authUsecases.RegistrationInteractor)
+	registrationInteractor := new(userUsecases.RegistrationInteractor)
 	registrationInteractor.UserRepository = userInMemoryRepo
 
-	authorizationInteractor := new(authUsecases.AuthorizationInteractor)
+	authorizationInteractor := new(userUsecases.AuthorizationInteractor)
 	authorizationInteractor.UserRepository = userInMemoryRepo
 
 	//initialize webservices
-	webserviceHandler := authInterfaces.WebserviceHandler{}
+	webserviceHandler := userInterfaces.WebserviceHandler{}
 	webserviceHandler.RegistrationInteractor = registrationInteractor
 	webserviceHandler.AuthorizationInteractor = authorizationInteractor
 

@@ -2,6 +2,6 @@ package interfaces
 
 import "infrastructures"
 
-func GetCurrentUser(sessionId string) string {
+func GetCurrentUserEmail(sessionId string) string {
 	return infrastructures.InMemorySession.Get(sessionId)
 }

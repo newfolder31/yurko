@@ -3,12 +3,12 @@ package daemons
 import (
 	"fmt"
 	"net/http"
-	"daemons/authDaemon"
+	"daemons/userDaemon"
 	"interfaces"
 )
 
 func Run() error {
-	authDaemon.InitAuthModule()
+	userDaemon.InitAuthModule()
 
 	http.Handle("/", indexHandler())
 
@@ -22,7 +22,7 @@ func indexHandler() http.Handler {
 		fmt.Fprintf(w, "Hello, you've requested: %s\n", r.URL.Path)
 		cookie, _ := r.Cookie("sessionId")
 		if cookie != nil {
-			userEmail := interfaces.GetCurrentUser(cookie.Value)
+			userEmail := interfaces.GetCurrentUserEmail(cookie.Value)
 			fmt.Fprintf(w, "Current user is %s\n", userEmail)
 		}
 	})

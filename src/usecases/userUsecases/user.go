@@ -1,4 +1,4 @@
-package authUsecases
+package userUsecases
 
 type UserRepository interface {
 	Store(user *User) error

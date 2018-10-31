@@ -1,4 +1,4 @@
-package authUsecases
+package userUsecases
 
 import (
 	"errors"
