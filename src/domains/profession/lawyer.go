@@ -1,5 +1,4 @@
-package profession
-
+package professionDomain
 
 type LawyerRepository interface {
 	Store(user *Lawyer) error
@@ -9,4 +8,3 @@ type LawyerRepository interface {
 type Lawyer struct {
 	Id int
 }
-

@@ -8,7 +8,7 @@ import (
 	"usecases/user"
 )
 
-func (webservice WebserviceHandler) GetUser(w http.ResponseWriter, r *http.Request) {
+func (webservice UserWebserviceHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		if err := r.ParseForm(); err != nil {
 			w.WriteHeader(http.StatusBadRequest)

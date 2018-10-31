@@ -7,7 +7,7 @@ import (
 	"usecases/user"
 )
 
-func (webservice WebserviceHandler) FastRegistration(w http.ResponseWriter, r *http.Request) {
+func (webservice UserWebserviceHandler) FastRegistration(w http.ResponseWriter, r *http.Request) {
 	//if r.Method == http.MethodPost {
 	if err := r.ParseForm(); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -32,7 +32,7 @@ func (webservice WebserviceHandler) FastRegistration(w http.ResponseWriter, r *h
 	//}
 }
 
-func (webservice WebserviceHandler) Registration(w http.ResponseWriter, r *http.Request) {
+func (webservice UserWebserviceHandler) Registration(w http.ResponseWriter, r *http.Request) {
 	//if r.Method == http.MethodPost {
 	if err := r.ParseForm(); err != nil {
 		w.WriteHeader(http.StatusBadRequest)

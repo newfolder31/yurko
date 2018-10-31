@@ -1,4 +1,4 @@
 package professionInterfaces
 
-type WebserviceHandler struct {
+type ProfessionWebserviceHandler struct {
 }

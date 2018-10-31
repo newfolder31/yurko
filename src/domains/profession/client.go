@@ -1,5 +1,4 @@
-package profession
-
+package professionDomain
 
 type ClientRepository interface {
 	Store(user *Client) error

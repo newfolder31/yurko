@@ -8,7 +8,7 @@ import (
 	"usecases/user"
 )
 
-func (webservice WebserviceHandler) Login(w http.ResponseWriter, r *http.Request) {
+func (webservice UserWebserviceHandler) Login(w http.ResponseWriter, r *http.Request) {
 	//if r.Method == http.MethodPost {
 	if err := r.ParseForm(); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -35,7 +35,7 @@ func (webservice WebserviceHandler) Login(w http.ResponseWriter, r *http.Request
 	//}
 }
 
-func (webservice WebserviceHandler) Logout(w http.ResponseWriter, r *http.Request) {
+func (webservice UserWebserviceHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	//if r.Method == http.MethodPost {
 
 	cookie, _ := r.Cookie(infrastructures.COOKIE_SESSION_NAME)

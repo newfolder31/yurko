@@ -20,7 +20,7 @@ type ProfileInteractor interface {
 	UpdateUser() error   //todo
 }
 
-type WebserviceHandler struct {
+type UserWebserviceHandler struct {
 	RegistrationInteractor  RegistrationInteractor
 	AuthorizationInteractor AuthorizationInteractor
 	ProfileInteractor       ProfileInteractor

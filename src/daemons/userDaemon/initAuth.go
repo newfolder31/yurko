@@ -22,7 +22,7 @@ func InitAuthModule() {
 	authorizationInteractor.UserRepository = userInMemoryRepo
 
 	//initialize webservices
-	webserviceHandler := userInterfaces.WebserviceHandler{}
+	webserviceHandler := userInterfaces.UserWebserviceHandler{}
 	webserviceHandler.RegistrationInteractor = registrationInteractor
 	webserviceHandler.AuthorizationInteractor = authorizationInteractor
 
