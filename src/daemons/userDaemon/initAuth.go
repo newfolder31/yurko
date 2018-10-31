@@ -1,9 +1,9 @@
 package userDaemon
 
 import (
-	"interfaces/userInterfaces"
+	"interfaces/user"
 	"net/http"
-	"usecases/userUsecases"
+	"usecases/user"
 )
 
 func InitAuthModule() {

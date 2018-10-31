@@ -1,7 +1,7 @@
 package userInterfaces
 
 import (
-	"usecases/userUsecases"
+	"usecases/user"
 )
 
 type RegistrationInteractor interface {
@@ -17,7 +17,7 @@ type AuthorizationInteractor interface {
 type ProfileInteractor interface {
 	GetUser(email string) (*userUsecases.User, error)
 	ValidateUser() error //todo
-	UpdateUser() error //todo
+	UpdateUser() error   //todo
 }
 
 type WebserviceHandler struct {

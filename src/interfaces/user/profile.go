@@ -5,7 +5,7 @@ import (
 	"github.com/gorilla/schema"
 	"infrastructures"
 	"net/http"
-	"usecases/userUsecases"
+	"usecases/user"
 )
 
 func (webservice WebserviceHandler) GetUser(w http.ResponseWriter, r *http.Request) {

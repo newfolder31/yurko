@@ -3,7 +3,7 @@ package userInterfaces
 import (
 	"math/rand"
 	"time"
-	"usecases/userUsecases"
+	"usecases/user"
 )
 
 type UserInMemoryRepo struct {

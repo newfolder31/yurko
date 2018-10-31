@@ -3,9 +3,9 @@ package userInterfaces
 import (
 	"fmt"
 	"github.com/gorilla/schema"
-	"net/http"
 	"infrastructures"
-	"usecases/userUsecases"
+	"net/http"
+	"usecases/user"
 )
 
 func (webservice WebserviceHandler) Login(w http.ResponseWriter, r *http.Request) {

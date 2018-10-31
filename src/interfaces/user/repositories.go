@@ -1,7 +1,7 @@
 package userInterfaces
 
 import (
-	"usecases/userUsecases"
+	"usecases/user"
 )
 
 type UserRepo interface {

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/gorilla/schema"
 	"net/http"
-	"usecases/userUsecases"
+	"usecases/user"
 )
 
 func (webservice WebserviceHandler) FastRegistration(w http.ResponseWriter, r *http.Request) {

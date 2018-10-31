@@ -30,7 +30,7 @@ func (interactor *RegistrationInteractor) createUser(form *RegistrationForm) Use
 	user.LastName = form.LastName
 	user.FathersName = form.FathersName
 
-	user.IsActive = false
+	user.IsActive = true //todo: activate user by email
 
 	interactor.UserRepository.Store(&user)
 
