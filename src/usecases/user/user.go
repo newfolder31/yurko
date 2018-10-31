@@ -7,16 +7,16 @@ type UserRepository interface {
 	FindByEmailAndPassword(email, password string) (*User, error)
 }
 
+//table_name: usr
 type User struct {
 	Id       int
 	Email    string
 	Password string
 
-	IsAdmin bool
+	IsAdmin  bool `db:"is_admin"`
+	IsActive bool `db:"is_active"`
 
-	IsActive bool
-
-	FirstName   string
-	LastName    string
-	FathersName string
+	FirstName   string `db:"first_name"`
+	LastName    string `db:"last_name"`
+	FathersName string `db:"fathers_name"`
 }

@@ -10,6 +10,10 @@ func InitAuthModule() {
 	//initialize repositories
 	userInMemoryRepo := userInterfaces.NewUserInMemoryRepo()
 
+	//initialize db repositories
+	//var postgresHandler = infrastructures.NewPostgresHandler()
+	//userInDbRepo := interfaces.UserInDbRepo{DbHandler: postgresHandler}
+
 	//initialize interceptors
 	registrationInteractor := new(userUsecases.RegistrationInteractor)
 	registrationInteractor.UserRepository = userInMemoryRepo
