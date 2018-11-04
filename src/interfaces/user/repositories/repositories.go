@@ -1,4 +1,4 @@
-package userInterfaces
+package userRepositories
 
 import (
 	"github.com/jmoiron/sqlx"

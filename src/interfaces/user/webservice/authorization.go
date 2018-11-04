@@ -1,4 +1,4 @@
-package userInterfaces
+package userWebservice
 
 import (
 	"fmt"

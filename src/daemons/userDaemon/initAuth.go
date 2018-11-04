@@ -1,14 +1,15 @@
 package userDaemon
 
 import (
-	"interfaces/user"
+	"interfaces/user/repositories"
+	"interfaces/user/webservice"
 	"net/http"
 	"usecases/user"
 )
 
 func InitAuthModule() {
 	//initialize repositories
-	userInMemoryRepo := userInterfaces.NewUserInMemoryRepo()
+	userInMemoryRepo := userRepositories.NewUserInMemoryRepo()
 
 	//initialize db repositories
 	//var postgresHandler = infrastructures.NewPostgresHandler()
@@ -22,11 +23,11 @@ func InitAuthModule() {
 	authorizationInteractor.UserRepository = userInMemoryRepo
 
 	//initialize webservices
-	webserviceHandler := userInterfaces.UserWebserviceHandler{}
+	webserviceHandler := userWebservice.UserWebserviceHandler{}
 	webserviceHandler.RegistrationInteractor = registrationInteractor
 	webserviceHandler.AuthorizationInteractor = authorizationInteractor
 
-	//set api handlers
+	//set api handlers todo question: prefix "api" ?
 	http.HandleFunc("/registration/fast", func(res http.ResponseWriter, req *http.Request) {
 		webserviceHandler.FastRegistration(res, req)
 	})

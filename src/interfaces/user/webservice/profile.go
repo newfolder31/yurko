@@ -1,4 +1,4 @@
-package userInterfaces
+package userWebservice
 
 import (
 	"fmt"
@@ -24,7 +24,7 @@ func (webservice UserWebserviceHandler) GetUser(w http.ResponseWriter, r *http.R
 
 			if cookie.Value == "" || err != nil {
 				fmt.Fprintf(w, "authorization is failed: %s!", err)
-				w.WriteHeader(http.StatusBadRequest)
+				w.WriteHeader(http.StatusUnauthorized)
 			} else {
 
 				var email = infrastructures.InMemorySession.Get(cookie.Value)
