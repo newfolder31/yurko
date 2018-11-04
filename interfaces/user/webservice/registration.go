@@ -3,8 +3,8 @@ package userWebservice
 import (
 	"fmt"
 	"github.com/gorilla/schema"
+	"github.com/newfolder31/yurko/usecases/user"
 	"net/http"
-	"usecases/user"
 )
 
 func (webservice UserWebserviceHandler) FastRegistration(w http.ResponseWriter, r *http.Request) {

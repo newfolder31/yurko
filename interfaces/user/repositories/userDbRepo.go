@@ -1,8 +1,6 @@
 package userRepositories
 
-import (
-	"usecases/user"
-)
+import "github.com/newfolder31/yurko/usecases/user"
 
 type UserInDbRepo struct {
 	DbHandler SqlxHandler

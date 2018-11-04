@@ -1,10 +1,10 @@
 package userDaemon
 
 import (
-	"interfaces/user/repositories"
-	"interfaces/user/webservice"
+	"github.com/newfolder31/yurko/interfaces/user/repositories"
+	"github.com/newfolder31/yurko/interfaces/user/webservice"
+	"github.com/newfolder31/yurko/usecases/user"
 	"net/http"
-	"usecases/user"
 )
 
 func InitAuthModule() {

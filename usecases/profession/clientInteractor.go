@@ -1,9 +1,9 @@
 package professionUsecases
 
 import (
-	"domains/profession"
 	"errors"
 	"fmt"
+	"github.com/newfolder31/yurko/domains/profession"
 )
 
 type ClientForm struct {

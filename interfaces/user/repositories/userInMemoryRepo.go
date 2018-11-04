@@ -1,9 +1,9 @@
 package userRepositories
 
 import (
+	"github.com/newfolder31/yurko/usecases/user"
 	"math/rand"
 	"time"
-	"usecases/user"
 )
 
 type UserInMemoryRepo struct {

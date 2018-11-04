@@ -2,9 +2,9 @@ package daemons
 
 import (
 	"fmt"
+	"github.com/newfolder31/yurko/daemons/userDaemon"
+	"github.com/newfolder31/yurko/interfaces"
 	"net/http"
-	"daemons/userDaemon"
-	"interfaces"
 )
 
 func Run() error {

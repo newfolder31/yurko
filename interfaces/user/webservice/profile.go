@@ -3,9 +3,9 @@ package userWebservice
 import (
 	"fmt"
 	"github.com/gorilla/schema"
-	"infrastructures"
+	"github.com/newfolder31/yurko/infrastructures"
+	"github.com/newfolder31/yurko/usecases/user"
 	"net/http"
-	"usecases/user"
 )
 
 func (webservice UserWebserviceHandler) GetUser(w http.ResponseWriter, r *http.Request) {

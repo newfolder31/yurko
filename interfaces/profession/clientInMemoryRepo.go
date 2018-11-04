@@ -1,7 +1,7 @@
 package professionInterfaces
 
 import (
-	"domains/profession"
+	"github.com/newfolder31/yurko/domains/profession"
 	"math/rand"
 	"time"
 )

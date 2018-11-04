@@ -2,7 +2,7 @@ package userRepositories
 
 import (
 	"github.com/jmoiron/sqlx"
-	"usecases/user"
+	"github.com/newfolder31/yurko/usecases/user"
 )
 
 type UserRepo interface {
