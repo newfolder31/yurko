@@ -13,3 +13,6 @@
 
 #Goland files
 .idea
+
+pkg
+src/github.com
