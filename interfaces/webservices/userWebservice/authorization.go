@@ -4,10 +4,15 @@ import (
 	"fmt"
 	"github.com/gorilla/schema"
 	"github.com/newfolder31/yurko/infrastructures"
-	"github.com/newfolder31/yurko/usecases/user"
+	"github.com/newfolder31/yurko/usecases/userUsecases"
 	"net/http"
 )
 
+/**
+http handlers for:
+- /login
+- /logout
+*/
 func (webservice UserWebserviceHandler) Login(w http.ResponseWriter, r *http.Request) {
 	//if r.Method == http.MethodPost {
 	if err := r.ParseForm(); err != nil {

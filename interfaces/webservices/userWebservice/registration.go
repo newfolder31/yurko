@@ -3,7 +3,7 @@ package userWebservice
 import (
 	"fmt"
 	"github.com/gorilla/schema"
-	"github.com/newfolder31/yurko/usecases/user"
+	"github.com/newfolder31/yurko/usecases/userUsecases"
 	"net/http"
 )
 

@@ -1,7 +1,7 @@
 package userWebservice
 
 import (
-	"github.com/newfolder31/yurko/usecases/user"
+	"github.com/newfolder31/yurko/usecases/userUsecases"
 )
 
 type RegistrationInteractor interface {

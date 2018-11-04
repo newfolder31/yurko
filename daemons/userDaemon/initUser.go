@@ -1,15 +1,15 @@
 package userDaemon
 
 import (
-	"github.com/newfolder31/yurko/interfaces/user/repositories"
-	"github.com/newfolder31/yurko/interfaces/user/webservice"
-	"github.com/newfolder31/yurko/usecases/user"
+	"github.com/newfolder31/yurko/interfaces/repositories/userRepository"
+	"github.com/newfolder31/yurko/interfaces/webservices/userWebservice"
+	"github.com/newfolder31/yurko/usecases/userUsecases"
 	"net/http"
 )
 
 func InitAuthModule() {
 	//initialize repositories
-	userInMemoryRepo := userRepositories.NewUserInMemoryRepo()
+	userInMemoryRepo := userRepository.NewUserInMemoryRepo()
 
 	//initialize db repositories
 	//var postgresHandler = infrastructures.NewPostgresHandler()
