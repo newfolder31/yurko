@@ -1,5 +1,4 @@
 language: go
   go:
-    - 1.11.x
-script:
-  - go test
+    - "1.10"
+script: make
