@@ -17,6 +17,7 @@ func Run() error {
 	return nil
 }
 
+//todo: delete
 func indexHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Hello, you've requested: %s\n", r.URL.Path)

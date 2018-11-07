@@ -1,4 +1,4 @@
-package professionRepository
+package repositories
 
 import (
 	"github.com/newfolder31/yurko/domains/profession"

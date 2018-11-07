@@ -6,7 +6,7 @@ import (
 )
 
 type RegistrationForm struct {
-	Email, Password, ConfirmPassword string
+	Email, Password string
 
 	FirstName, LastName, FathersName string
 }
@@ -43,7 +43,7 @@ func (interactor *RegistrationInteractor) ValidateRegistrationRequest(form *Regi
 	if err := interactor.validateEmail(form.Email); err != nil {
 		return err
 	}
-	if err := interactor.validatePasswords(form.Password, form.ConfirmPassword); err != nil {
+	if err := interactor.validatePasswords(form.Password); err != nil {
 		return err
 	}
 	return nil
@@ -57,6 +57,9 @@ func (interactor *RegistrationInteractor) ValidateFastRegistrationRequest(form *
 }
 
 func (interactor *RegistrationInteractor) validateEmail(email string) error {
+	if email == "" {
+		return errors.New("email can't be empty")
+	}
 	user, _ := interactor.UserRepository.FindByEmail(email)
 	if user != nil {
 		return errors.New("user with specified email exists")
@@ -65,15 +68,9 @@ func (interactor *RegistrationInteractor) validateEmail(email string) error {
 	return nil
 }
 
-func (interactor *RegistrationInteractor) validatePasswords(pass, confirmPass string) error {
+func (interactor *RegistrationInteractor) validatePasswords(pass string) error {
 	if pass == "" {
 		return errors.New("password is empty")
-	}
-	if confirmPass == "" {
-		return errors.New("confirm password is empty")
-	}
-	if pass != confirmPass {
-		return errors.New("passwords are not equals")
 	}
 	return nil
 }

@@ -1,4 +1,4 @@
-package userRepository
+package repositories
 
 import (
 	"github.com/newfolder31/yurko/usecases/userUsecases"
@@ -17,10 +17,14 @@ func NewUserInMemoryRepo() *UserInMemoryRepo {
 }
 
 func (repo UserInMemoryRepo) Store(user *userUsecases.User) error {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	id := r.Int()
-	user.Id = id
-	repo.data[id] = *user
+	if user.Id != 0 {
+		repo.data[user.Id] = *user
+	} else {
+		r := rand.New(rand.NewSource(time.Now().UnixNano()))
+		id := r.Int()
+		user.Id = id
+		repo.data[id] = *user
+	}
 
 	return nil
 }

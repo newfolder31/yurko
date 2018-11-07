@@ -1,8 +1,8 @@
 package userDaemon
 
 import (
-	"github.com/newfolder31/yurko/interfaces/repositories/userRepository"
-	"github.com/newfolder31/yurko/interfaces/webservices/userWebservice"
+	userRepository "github.com/newfolder31/yurko/interfaces/user/repositories"
+	userWebHandler "github.com/newfolder31/yurko/interfaces/user/webHandlers"
 	"github.com/newfolder31/yurko/usecases/userUsecases"
 	"net/http"
 )
@@ -22,10 +22,14 @@ func InitAuthModule() {
 	authorizationInteractor := new(userUsecases.AuthorizationInteractor)
 	authorizationInteractor.UserRepository = userInMemoryRepo
 
+	profileInteractor := new(userUsecases.ProfileInteractor)
+	profileInteractor.UserRepository = userInMemoryRepo
+
 	//initialize webservices
-	webserviceHandler := userWebservice.UserWebserviceHandler{}
+	webserviceHandler := userWebHandler.UserWebserviceHandler{}
 	webserviceHandler.RegistrationInteractor = registrationInteractor
 	webserviceHandler.AuthorizationInteractor = authorizationInteractor
+	webserviceHandler.ProfileInteractor = profileInteractor
 
 	//set api handlers todo question: prefix "api" ?
 	http.HandleFunc("/registration/fast", func(res http.ResponseWriter, req *http.Request) {

@@ -1,8 +1,8 @@
-package userWebservice
+package webHandlers
 
 import (
+	"encoding/json"
 	"fmt"
-	"github.com/gorilla/schema"
 	"github.com/newfolder31/yurko/infrastructures"
 	"github.com/newfolder31/yurko/usecases/userUsecases"
 	"net/http"
@@ -15,13 +15,10 @@ http handlers for:
 */
 func (webservice UserWebserviceHandler) Login(w http.ResponseWriter, r *http.Request) {
 	//if r.Method == http.MethodPost {
-	if err := r.ParseForm(); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
 
 	form := new(userUsecases.LoginForm)
-	if err := schema.NewDecoder().Decode(form, r.Form); err != nil {
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&form); err != nil {
 		fmt.Fprintf(w, "some error in parse request params: %s!", err)
 		w.WriteHeader(http.StatusBadRequest)
 	} else {

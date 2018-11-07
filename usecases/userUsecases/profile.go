@@ -1,7 +1,13 @@
 package userUsecases
 
+import "errors"
+
 type ProfileForm struct {
-	Email, FirstName, LastName, FathersName string
+	Id          int    `json:"id"`
+	Email       string `json:"email"`
+	FirstName   string `json:"first_name"`
+	LastName    string `json:"last_name"`
+	FathersName string `json:"fathers_name"`
 }
 
 type ProfileInteractor struct {
@@ -10,26 +16,52 @@ type ProfileInteractor struct {
 
 func (interactor *ProfileInteractor) GetUser(email string) (*User, error) {
 	user, err := interactor.UserRepository.FindByEmail(email)
-	if err != nil {
-		return nil, err
-	}
-
-	return user, nil
+	return user, err
 }
 
-func (interactor *ProfileInteractor) ValidateUser(form *ProfileForm) error {
-	//validate form
-
-	return nil
-}
-
-func (interactor *ProfileInteractor) UpdateUser(email string, form *ProfileForm) (*User, error) {
+func (interactor *ProfileInteractor) GetProfileResponse(email string) (map[string]interface{}, error) {
 	user, err := interactor.UserRepository.FindByEmail(email)
 	if err != nil {
 		return nil, err
 	}
 
-	//todo :move params from form to user
+	userMap := make(map[string]interface{})
+
+	userMap["id"] = user.Id
+	userMap["email"] = user.Email
+	userMap["first_name"] = user.FirstName
+	userMap["last_name"] = user.LastName
+	userMap["fathers_name"] = user.FathersName
+
+	return userMap, nil
+}
+
+func (interactor *ProfileInteractor) ValidateUser(email string, form *ProfileForm) error {
+	currentUser, err := interactor.UserRepository.FindByEmail(email)
+
+	if err != nil {
+		return err
+	} else if currentUser.Id != form.Id {
+		return errors.New("permission denied")
+	}
+
+	//todo: validate other form fields
+
+	return nil
+}
+
+func (interactor *ProfileInteractor) UpdateUser(form *ProfileForm) (*User, error) {
+	user, err := interactor.UserRepository.FindById(form.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	user.Email = form.Email
+	user.FirstName = form.FirstName
+	user.LastName = form.LastName
+	user.FathersName = form.FathersName
+
+	interactor.UserRepository.Store(user)
 
 	return user, nil
 }
