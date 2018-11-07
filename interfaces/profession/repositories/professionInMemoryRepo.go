@@ -25,6 +25,11 @@ func (repo ProfessionInMemoryRepo) Store(profession *professionDomain.Profession
 	return nil
 }
 
+func (repo ProfessionInMemoryRepo) FindById(id int) (*professionDomain.Profession, error) {
+	profession, _ := repo.data[id]
+	return &profession, nil
+}
+
 func (repo ProfessionInMemoryRepo) FindByUser(userId int) (*professionDomain.Profession, error) {
 	profession, _ := repo.data[userId]
 	return &profession, nil

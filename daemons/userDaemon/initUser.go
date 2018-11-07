@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func InitAuthModule() {
+func InitUserModule() {
 	//initialize repositories
 	userInMemoryRepo := userRepository.NewUserInMemoryRepo()
 
@@ -46,5 +46,13 @@ func InitAuthModule() {
 
 	http.HandleFunc("/logout", func(res http.ResponseWriter, req *http.Request) {
 		webserviceHandler.Logout(res, req)
+	})
+
+	http.HandleFunc("/profile/get", func(res http.ResponseWriter, req *http.Request) {
+		webserviceHandler.GetUser(res, req)
+	})
+
+	http.HandleFunc("/profile/update", func(res http.ResponseWriter, req *http.Request) {
+		webserviceHandler.UpdateUser(res, req)
 	})
 }

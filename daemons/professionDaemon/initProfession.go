@@ -9,8 +9,8 @@ func InitProfessionModule() {
 	//registrationInteractor.UserRepository = userInMemoryRepo
 	//
 	//
-	////initialize webservices
-	//webserviceHandler := professionInterfaces.WebserviceHandler{}
+	//initialize webservices
+	//webserviceHandler := ProfessionWebserviceHandler{}
 	//webserviceHandler.RegistrationInteractor = registrationInteractor
 	//
 	////set api handlers

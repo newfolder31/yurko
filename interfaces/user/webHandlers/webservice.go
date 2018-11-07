@@ -1,4 +1,4 @@
-package userWebservice
+package webHandlers
 
 import (
 	"github.com/newfolder31/yurko/usecases/userUsecases"
@@ -16,8 +16,9 @@ type AuthorizationInteractor interface {
 
 type ProfileInteractor interface {
 	GetUser(email string) (*userUsecases.User, error)
-	ValidateUser() error //todo
-	UpdateUser() error   //todo
+	GetProfileResponse(email string) (map[string]interface{}, error)
+	ValidateUser(email string, form *userUsecases.ProfileForm) error
+	UpdateUser(form *userUsecases.ProfileForm) (*userUsecases.User, error)
 }
 
 type UserWebserviceHandler struct {

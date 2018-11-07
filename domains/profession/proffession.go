@@ -2,6 +2,7 @@ package professionDomain
 
 type ProfessionRepository interface {
 	Store(user *Profession) error
+	FindById(id int) (*Profession, error)
 	FindByUser(userId int) (*Profession, error)
 }
 

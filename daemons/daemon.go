@@ -8,7 +8,7 @@ import (
 )
 
 func Run() error {
-	userDaemon.InitAuthModule()
+	userDaemon.InitUserModule()
 
 	http.Handle("/", indexHandler())
 
