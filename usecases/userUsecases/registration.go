@@ -6,9 +6,11 @@ import (
 )
 
 type RegistrationForm struct {
-	Email, Password string
-
-	FirstName, LastName, FathersName string
+	Email       string `json:"email"`
+	Password    string `json:"password"`
+	FirstName   string `json:"first_name"`
+	LastName    string `json:"last_name"`
+	FathersName string `json:"fathers_name"`
 }
 
 type RegistrationInteractor struct {
@@ -43,7 +45,7 @@ func (interactor *RegistrationInteractor) ValidateRegistrationRequest(form *Regi
 	if err := interactor.validateEmail(form.Email); err != nil {
 		return err
 	}
-	if err := interactor.validatePasswords(form.Password); err != nil {
+	if err := interactor.validatePassword(form.Password); err != nil {
 		return err
 	}
 	return nil
@@ -68,7 +70,7 @@ func (interactor *RegistrationInteractor) validateEmail(email string) error {
 	return nil
 }
 
-func (interactor *RegistrationInteractor) validatePasswords(pass string) error {
+func (interactor *RegistrationInteractor) validatePassword(pass string) error {
 	if pass == "" {
 		return errors.New("password is empty")
 	}

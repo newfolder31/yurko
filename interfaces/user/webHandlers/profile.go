@@ -31,30 +31,30 @@ func (webservice UserWebserviceHandler) GetUser(w http.ResponseWriter, r *http.R
 	}
 }
 func (webservice UserWebserviceHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
-	//if r.Method == http.MethodPost {
-	form := new(userUsecases.ProfileForm)
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&form); err != nil {
-		fmt.Fprintf(w, "some error in parse request params: %s!", err)
-		w.WriteHeader(http.StatusBadRequest)
-	} else {
-		cookie, err := r.Cookie(infrastructures.COOKIE_SESSION_NAME)
-
-		if cookie.Value == "" || err != nil {
-			fmt.Fprintf(w, "authorization is failed: %s!", err)
-			w.WriteHeader(http.StatusUnauthorized)
+	if r.Method == http.MethodPost {
+		form := new(userUsecases.ProfileForm)
+		decoder := json.NewDecoder(r.Body)
+		if err := decoder.Decode(&form); err != nil {
+			fmt.Fprintf(w, "some error in parse request params: %s!", err)
+			w.WriteHeader(http.StatusBadRequest)
 		} else {
+			cookie, err := r.Cookie(infrastructures.COOKIE_SESSION_NAME)
 
-			var email = infrastructures.InMemorySession.Get(cookie.Value)
-			if err := webservice.ProfileInteractor.ValidateUser(email, form); err != nil {
-				w.WriteHeader(http.StatusBadRequest)
+			if cookie.Value == "" || err != nil {
+				fmt.Fprintf(w, "authorization is failed: %s!", err)
+				w.WriteHeader(http.StatusUnauthorized)
 			} else {
-				/*var user, _ = */ webservice.ProfileInteractor.UpdateUser(form)
-				w.WriteHeader(http.StatusOK)
+
+				var email = infrastructures.InMemorySession.Get(cookie.Value)
+				if err := webservice.ProfileInteractor.ValidateUser(email, form); err != nil {
+					w.WriteHeader(http.StatusBadRequest)
+				} else {
+					/*var user, _ = */ webservice.ProfileInteractor.UpdateUser(form)
+					w.WriteHeader(http.StatusOK)
+				}
 			}
 		}
+	} else {
+		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
-	//} else {
-	//	w.WriteHeader(http.StatusMethodNotAllowed)
-	//}
 }
