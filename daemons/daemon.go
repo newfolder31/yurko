@@ -1,11 +1,11 @@
 package daemons
 
 import (
-	"interfaces"
-	schedulingHandlers "interfaces/scheduling/handlers"
-	schedulingRepos "interfaces/scheduling/repositories"
+	"github.com/newfolder31/yurko/interfaces"
+	schedulingHandlers "github.com/newfolder31/yurko/interfaces/scheduling/handlers"
+	schedulingRepos "github.com/newfolder31/yurko/interfaces/scheduling/repositories"
+	schedulingUsecases "github.com/newfolder31/yurko/usecases/scheduling"
 	"net/http"
-	schedulingUsecases "usecases/scheduling"
 )
 
 func Run() error {
@@ -36,5 +36,9 @@ func initScheduleHandling(webserviceHandler *interfaces.WebserviceHandler) {
 
 	http.HandleFunc("/scheduling/createSchedule", func(res http.ResponseWriter, req *http.Request) {
 		scheduleHandler.CreateScheduler(res, req)
+	})
+
+	http.HandleFunc("/scheduling/getAllSchedulers", func(res http.ResponseWriter, req *http.Request) {
+		scheduleHandler.GetAllSchedulesByUserId(res, req)
 	})
 }

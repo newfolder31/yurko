@@ -1,8 +1,8 @@
 package main
 
 import (
-	"daemons"
 	"fmt"
+	"github.com/newfolder31/yurko/daemons"
 	"time"
 )
 

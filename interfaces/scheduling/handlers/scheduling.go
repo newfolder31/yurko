@@ -1,10 +1,10 @@
 package handlers
 
 import (
-	domains "domains/scheduling"
 	"encoding/json"
+	domains "github.com/newfolder31/yurko/domains/scheduling"
+	usecases "github.com/newfolder31/yurko/usecases/scheduling"
 	"net/http"
-	usecases "usecases/scheduling"
 )
 
 type SchedulingInteractor interface {
@@ -28,7 +28,7 @@ type createScheduleRequest struct {
 }
 
 type getAllSchedulersRequest struct {
-	userId uint64 `json:"userId"`
+	UserId uint64 `json:"userId"`
 }
 
 func (handler *ScheduleWebserviceHandler) CreateScheduler(w http.ResponseWriter, r *http.Request) {
@@ -48,7 +48,7 @@ func (handler *ScheduleWebserviceHandler) CreateScheduler(w http.ResponseWriter,
 	}
 }
 
-func (handler *ScheduleWebserviceHandler) GetAllSchedulersByUserId(w http.ResponseWriter, r *http.Request) {
+func (handler *ScheduleWebserviceHandler) GetAllSchedulesByUserId(w http.ResponseWriter, r *http.Request) {
 	interactor := handler.SchedulingInteractor
 
 	decoder := json.NewDecoder(r.Body)
@@ -58,8 +58,14 @@ func (handler *ScheduleWebserviceHandler) GetAllSchedulersByUserId(w http.Respon
 		w.WriteHeader(http.StatusBadRequest)
 	}
 
-	if _, err := SchedulingInteractor(*interactor).GetAllSchedulersByUserId(t.userId); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+	schedules, err := SchedulingInteractor(*interactor).GetAllSchedulersByUserId(t.UserId)
+	if err != nil {
+		errorMap := map[string]string{"Error": err.Error()}
+		errorJsonMessage, _ := json.Marshal(errorMap)
+		http.Error(w, string(errorJsonMessage), http.StatusBadRequest)
+		return
 	}
-	json.NewEncoder(w)
+	result, _ := json.Marshal(&schedules)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(result)
 }

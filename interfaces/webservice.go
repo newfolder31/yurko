@@ -1,7 +1,7 @@
 package interfaces
 
 import (
-	"interfaces/scheduling/handlers"
+	"github.com/newfolder31/yurko/interfaces/scheduling/handlers"
 )
 
 type WebserviceHandler struct {
