@@ -5,14 +5,18 @@ import (
 	"github.com/newfolder31/yurko/daemons/userDaemon"
 	"github.com/newfolder31/yurko/interfaces"
 	"net/http"
+	"os"
 )
 
 func Run() error {
 	userDaemon.InitUserModule()
 
 	http.Handle("/", indexHandler())
-
-	http.ListenAndServe(":8081", nil)
+	a := os.Getenv("PORT")
+	if len(a) == 0 {
+		a = "8081"
+	}
+	http.ListenAndServe(":"+os.Getenv("PORT"), nil)
 
 	return nil
 }
