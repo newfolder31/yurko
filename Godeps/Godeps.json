@@ -1,0 +1,17 @@
+{
+	"ImportPath": "github.com/newfolder31/yurko",
+	"GoVersion": "go1.10",
+	"GodepVersion": "v80",
+	"Deps": [
+		{
+			"ImportPath": "github.com/go-chi/chi",
+			"Comment": "v3.3.3-8-g263880d",
+			"Rev": "263880db92251ff501a733d7fdb8f5fb026ac548"
+		},
+		{
+			"ImportPath": "github.com/go-chi/cors",
+			"Comment": "v1.0.0-7-g07727c8",
+			"Rev": "07727c846d14299758e54a275dd8c81353c01960"
+		}
+	]
+}
