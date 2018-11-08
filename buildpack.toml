@@ -1,8 +1,0 @@
-[buildpack]
-name = "Go"
-
-  [publish.Ignore]
-  files = [
-    ".gitignore",
-    ".travis.yml"
-  ]
