@@ -2,6 +2,8 @@ package daemons
 
 import (
 	"fmt"
+	"github.com/go-chi/chi"
+	"github.com/go-chi/cors"
 	"github.com/newfolder31/yurko/daemons/userDaemon"
 	"github.com/newfolder31/yurko/interfaces"
 	"net/http"
@@ -9,14 +11,28 @@ import (
 )
 
 func Run() error {
-	userDaemon.InitUserModule()
+	r := chi.NewRouter()
 
-	http.Handle("/", indexHandler())
+	corsRule := cors.New(cors.Options{
+		AllowOriginFunc:  AllowOriginFunc,
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Author ization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+		MaxAge:           300, // Maximum value not ignored by any of major browsers
+	})
+	r.Use(corsRule.Handler)
+
+	userDaemon.InitUserModule(r)
+
+	r.Handle("/", indexHandler())
+
 	a := os.Getenv("PORT")
 	if len(a) == 0 {
 		a = "8081"
 	}
-	http.ListenAndServe(":"+os.Getenv("PORT"), nil)
+
+	http.ListenAndServe(":"+a, r)
 
 	return nil
 }
@@ -31,4 +47,11 @@ func indexHandler() http.Handler {
 			fmt.Fprintf(w, "Current user is %s\n", userEmail)
 		}
 	})
+}
+
+func AllowOriginFunc(r *http.Request, origin string) bool {
+	//if origin == "http://example.com" {
+	//	return true
+	//}
+	return true
 }

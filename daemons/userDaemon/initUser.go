@@ -1,13 +1,15 @@
 package userDaemon
 
 import (
+	"github.com/go-chi/chi"
 	userRepository "github.com/newfolder31/yurko/interfaces/user/repositories"
 	userWebHandler "github.com/newfolder31/yurko/interfaces/user/webHandlers"
 	"github.com/newfolder31/yurko/usecases/userUsecases"
 	"net/http"
 )
 
-func InitUserModule() {
+func InitUserModule(r *chi.Mux) {
+
 	//initialize repositories
 	userInMemoryRepo := userRepository.NewUserInMemoryRepo()
 
@@ -32,27 +34,51 @@ func InitUserModule() {
 	webserviceHandler.ProfileInteractor = profileInteractor
 
 	//set api handlers todo question: prefix "api" ?
-	http.HandleFunc("/registration/fast", func(res http.ResponseWriter, req *http.Request) {
+	r.Post("/registration/fast", func(res http.ResponseWriter, req *http.Request) {
 		webserviceHandler.FastRegistration(res, req)
 	})
+	//TODO old version
+	//http.HandleFunc("/registration/fast", func(res http.ResponseWriter, req *http.Request) {
+	//	webserviceHandler.FastRegistration(res, req)
+	//})
 
-	http.HandleFunc("/registration", func(res http.ResponseWriter, req *http.Request) {
+	r.Post("/registration", func(res http.ResponseWriter, req *http.Request) {
 		webserviceHandler.Registration(res, req)
 	})
+	//TODO old version
+	//http.HandleFunc("/registration", func(res http.ResponseWriter, req *http.Request) {
+	//	webserviceHandler.Registration(res, req)
+	//})
 
-	http.HandleFunc("/login", func(res http.ResponseWriter, req *http.Request) {
+	r.Post("/login", func(res http.ResponseWriter, req *http.Request) {
 		webserviceHandler.Login(res, req)
 	})
+	//TODO old version
+	//http.HandleFunc("/login", func(res http.ResponseWriter, req *http.Request) {
+	//	webserviceHandler.Login(res, req)
+	//})
 
-	http.HandleFunc("/logout", func(res http.ResponseWriter, req *http.Request) {
+	r.Post("/logout", func(res http.ResponseWriter, req *http.Request) {
 		webserviceHandler.Logout(res, req)
 	})
+	//TODO old version
+	//http.HandleFunc("/logout", func(res http.ResponseWriter, req *http.Request) {
+	//	webserviceHandler.Logout(res, req)
+	//})
 
-	http.HandleFunc("/profile/get", func(res http.ResponseWriter, req *http.Request) {
+	r.Get("/profile/get", func(res http.ResponseWriter, req *http.Request) {
 		webserviceHandler.GetUser(res, req)
 	})
+	//TODO old version
+	//http.HandleFunc("/profile/get", func(res http.ResponseWriter, req *http.Request) {
+	//	webserviceHandler.GetUser(res, req)
+	//})
 
-	http.HandleFunc("/profile/update", func(res http.ResponseWriter, req *http.Request) {
+	r.Post("/profile/update", func(res http.ResponseWriter, req *http.Request) {
 		webserviceHandler.UpdateUser(res, req)
 	})
+	//TODO old version
+	//http.HandleFunc("/profile/update", func(res http.ResponseWriter, req *http.Request) {
+	//	webserviceHandler.UpdateUser(res, req)
+	//})
 }
