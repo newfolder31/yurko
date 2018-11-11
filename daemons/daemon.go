@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
-	"github.com/newfolder31/yurko/daemons/userDaemon"
+	"github.com/newfolder31/yurko/daemons/user"
 	"github.com/newfolder31/yurko/interfaces"
 	"net/http"
 	"os"
@@ -16,14 +16,14 @@ func Run() error {
 	corsRule := cors.New(cors.Options{
 		AllowOriginFunc:  AllowOriginFunc,
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"Accept", "Author ization", "Content-Type", "X-CSRF-Token"},
+		AllowedHeaders:   []string{"Accept", "Author ization", "Content-Type", "application/json"},
 		ExposedHeaders:   []string{"Link"},
 		AllowCredentials: true,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	})
 	r.Use(corsRule.Handler)
 
-	userDaemon.InitUserModule(r)
+	user.InitUserModule(r)
 
 	r.Handle("/", indexHandler())
 

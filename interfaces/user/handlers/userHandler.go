@@ -1,13 +1,12 @@
-package webHandlers
+package handlers
 
 import (
-	"github.com/newfolder31/yurko/usecases/userUsecases"
+	userUsecases "github.com/newfolder31/yurko/usecases/user"
 )
 
 type RegistrationInteractor interface {
 	Registration(form *userUsecases.RegistrationForm)
-	ValidateRegistrationRequest(form *userUsecases.RegistrationForm) error
-	ValidateFastRegistrationRequest(form *userUsecases.RegistrationForm) error
+	FastRegistration(form *userUsecases.FastRegistrationForm)
 }
 
 type AuthorizationInteractor interface {

@@ -1,13 +1,13 @@
-package userUsecases
+package user
 
 import "errors"
 
 type ProfileForm struct {
 	Id          int    `json:"id"`
 	Email       string `json:"email"`
-	FirstName   string `json:"first_name"`
-	LastName    string `json:"last_name"`
-	FathersName string `json:"fathers_name"`
+	FirstName   string `json:"firstName"`
+	LastName    string `json:"lastName"`
+	FathersName string `json:"fathersName"`
 }
 
 type ProfileInteractor struct {

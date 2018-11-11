@@ -1,10 +1,10 @@
-package userDaemon
+package user
 
 import (
 	"github.com/go-chi/chi"
+	userWebHandler "github.com/newfolder31/yurko/interfaces/user/handlers"
 	userRepository "github.com/newfolder31/yurko/interfaces/user/repositories"
-	userWebHandler "github.com/newfolder31/yurko/interfaces/user/webHandlers"
-	"github.com/newfolder31/yurko/usecases/userUsecases"
+	userUsecases "github.com/newfolder31/yurko/usecases/user"
 	"net/http"
 )
 
@@ -33,8 +33,8 @@ func InitUserModule(r *chi.Mux) {
 	webserviceHandler.AuthorizationInteractor = authorizationInteractor
 	webserviceHandler.ProfileInteractor = profileInteractor
 
-	//set api handlers todo question: prefix "api" ?
-	r.Post("/registration/fast", func(res http.ResponseWriter, req *http.Request) {
+	//set api handlers
+	r.Post("/api/v0/registration/fast", func(res http.ResponseWriter, req *http.Request) {
 		webserviceHandler.FastRegistration(res, req)
 	})
 	//TODO old version
@@ -42,7 +42,7 @@ func InitUserModule(r *chi.Mux) {
 	//	webserviceHandler.FastRegistration(res, req)
 	//})
 
-	r.Post("/registration", func(res http.ResponseWriter, req *http.Request) {
+	r.Post("/api/v0/registration", func(res http.ResponseWriter, req *http.Request) {
 		webserviceHandler.Registration(res, req)
 	})
 	//TODO old version
@@ -50,7 +50,7 @@ func InitUserModule(r *chi.Mux) {
 	//	webserviceHandler.Registration(res, req)
 	//})
 
-	r.Post("/login", func(res http.ResponseWriter, req *http.Request) {
+	r.Post("/api/v0/login", func(res http.ResponseWriter, req *http.Request) {
 		webserviceHandler.Login(res, req)
 	})
 	//TODO old version
@@ -58,7 +58,7 @@ func InitUserModule(r *chi.Mux) {
 	//	webserviceHandler.Login(res, req)
 	//})
 
-	r.Post("/logout", func(res http.ResponseWriter, req *http.Request) {
+	r.Post("/api/v0/logout", func(res http.ResponseWriter, req *http.Request) {
 		webserviceHandler.Logout(res, req)
 	})
 	//TODO old version
@@ -66,7 +66,7 @@ func InitUserModule(r *chi.Mux) {
 	//	webserviceHandler.Logout(res, req)
 	//})
 
-	r.Get("/profile/get", func(res http.ResponseWriter, req *http.Request) {
+	r.Get("/api/v0/profile/get", func(res http.ResponseWriter, req *http.Request) {
 		webserviceHandler.GetUser(res, req)
 	})
 	//TODO old version
@@ -74,7 +74,7 @@ func InitUserModule(r *chi.Mux) {
 	//	webserviceHandler.GetUser(res, req)
 	//})
 
-	r.Post("/profile/update", func(res http.ResponseWriter, req *http.Request) {
+	r.Post("/api/v0/profile/update", func(res http.ResponseWriter, req *http.Request) {
 		webserviceHandler.UpdateUser(res, req)
 	})
 	//TODO old version
