@@ -1,8 +1,8 @@
 package scheduling
 
 import (
-	domains "domains/scheduling"
-	"interfaces/scheduling/repositories"
+	domains "github.com/newfolder31/yurko/domains/scheduling"
+	"github.com/newfolder31/yurko/interfaces/scheduling/repositories"
 	"sort"
 	"testing"
 	"time"
