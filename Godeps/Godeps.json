@@ -4,6 +4,11 @@
 	"GodepVersion": "v80",
 	"Deps": [
 		{
+			"ImportPath": "github.com/asaskevich/govalidator",
+			"Comment": "v9-26-gf9ffefc",
+			"Rev": "f9ffefc3facfbe0caee3fea233cbb6e8208f4541"
+		},
+		{
 			"ImportPath": "github.com/go-chi/chi",
 			"Comment": "v3.3.3-8-g263880d",
 			"Rev": "263880db92251ff501a733d7fdb8f5fb026ac548"
@@ -12,6 +17,16 @@
 			"ImportPath": "github.com/go-chi/cors",
 			"Comment": "v1.0.0-7-g07727c8",
 			"Rev": "07727c846d14299758e54a275dd8c81353c01960"
+		},
+		{
+			"ImportPath": "github.com/go-ozzo/ozzo-validation",
+			"Comment": "v3.5.0-1-g2f76ea6",
+			"Rev": "2f76ea62300c36e72bd56c804484cb6db53b69a5"
+		},
+		{
+			"ImportPath": "github.com/go-ozzo/ozzo-validation/is",
+			"Comment": "v3.5.0-1-g2f76ea6",
+			"Rev": "2f76ea62300c36e72bd56c804484cb6db53b69a5"
 		}
 	]
 }
