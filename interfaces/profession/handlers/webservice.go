@@ -1,4 +1,4 @@
-package webHandlers
+package handlers
 
 type ProfessionWebserviceHandler struct {
 }

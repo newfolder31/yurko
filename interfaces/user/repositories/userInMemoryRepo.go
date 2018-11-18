@@ -1,7 +1,7 @@
 package repositories
 
 import (
-	"github.com/newfolder31/yurko/usecases/userUsecases"
+	userUsecases "github.com/newfolder31/yurko/usecases/user"
 	"math/rand"
 	"time"
 )

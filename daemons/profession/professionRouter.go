@@ -1,4 +1,4 @@
-package professionDaemon
+package profession
 
 func InitProfessionModule() {
 	////initialize repositories
