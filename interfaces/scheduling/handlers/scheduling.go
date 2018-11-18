@@ -11,7 +11,7 @@ import (
 type SchedulingInteractor interface {
 	CreateScheduler(userId uint64, professionType string, days *[]usecases.Day) (*domains.Scheduler, error)
 	GetAllSchedulersByUserId(userId uint64) (*[]*domains.Scheduler, error)
-	BuildSchedulerForDateRange(schedulerId uint64, dates *[]time.Time) (map[time.Time]*[]*domains.Interval, error)
+	BuildSchedulerForDateRange(schedulerId uint64, dates *[]time.Time) (map[time.Time]*usecases.ExceptionalDate, error)
 }
 
 type ScheduleWebserviceHandler struct {
@@ -54,6 +54,11 @@ type getAllSchedulersRequest struct {
 type buildSchedulesForDatesRequest struct {
 	SchedulerId uint64 `json:"schedulerId"`
 	Dates       []date `json:"dates"`
+}
+
+type buildSchedulesForDatesResponse struct {
+	Date      date                `json:"date"`
+	Intervals []usecases.Interval `json:"intervals"`
 }
 
 func (handler *ScheduleWebserviceHandler) CreateScheduler(w http.ResponseWriter, r *http.Request) {
@@ -115,14 +120,17 @@ func (handler *ScheduleWebserviceHandler) BuildSchedulesForDatesRequest(w http.R
 		return
 	}
 
-	resultMap := make(map[date]*[]*domains.Interval)
+	result := make([]buildSchedulesForDatesResponse, 0, len(preparedTime))
 	for k, v := range builtSchedules {
-		resultMap[fromTime(k)] = v
+		item := buildSchedulesForDatesResponse{}
+		item.Date = date{Year: k.Year(), Month: int(k.Month()), Day: k.Day()}
+		item.Intervals = v.Intervals
+		result = append(result, item)
 	}
 
-	result, _ := json.Marshal(&resultMap)
+	marshaledResult, _ := json.Marshal(&result)
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(result)
+	w.Write(marshaledResult)
 }
 
 func convertDateSliceToTime(dates []date) (result []time.Time) {

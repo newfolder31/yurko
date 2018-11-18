@@ -125,7 +125,7 @@ func TestAddExceptionsInScheduler(t *testing.T) {
 		}
 	}
 
-	exception := ExceptionalDate{date: preparedSaturdayDate.Unix(), Intervals: timeRanges}
+	exception := ExceptionalDate{Date: preparedSaturdayDate.Unix(), Intervals: timeRanges}
 	if err := a.AddExceptionInScheduler(scheduler.Id, &exception); err != nil {
 		t.Error("Error during adding exceptions!")
 	}
@@ -162,7 +162,7 @@ func TestAddExceptionsInScheduler(t *testing.T) {
 		}
 	}
 
-	exception = ExceptionalDate{date: preparedSaturdayDate.Unix(), Intervals: timeRanges}
+	exception = ExceptionalDate{Date: preparedSaturdayDate.Unix(), Intervals: timeRanges}
 	if err := a.AddExceptionInScheduler(scheduler.Id, &exception); err != nil {
 		t.Error("Error during adding exceptions!")
 	}
@@ -188,7 +188,7 @@ func TestAddExceptionsInScheduler(t *testing.T) {
 
 	//-----------Part 3-----------
 	//Test deleting exceptions for specified day
-	exception = ExceptionalDate{date: preparedSaturdayDate.Unix()}
+	exception = ExceptionalDate{Date: preparedSaturdayDate.Unix()}
 
 	if err := a.AddExceptionInScheduler(scheduler.Id, &exception); err != nil {
 		t.Error("Error during adding exceptions!")
@@ -295,7 +295,7 @@ func Test_BuildSchedulerForDate_forExceptionalDate(t *testing.T) {
 		}
 	}
 
-	exception := ExceptionalDate{date: preparedSaturdayDate.Unix(), Intervals: timeRanges}
+	exception := ExceptionalDate{Date: preparedSaturdayDate.Unix(), Intervals: timeRanges}
 	if err := a.AddExceptionInScheduler(scheduler.Id, &exception); err != nil {
 		t.Error("Error during adding exceptions!")
 	}

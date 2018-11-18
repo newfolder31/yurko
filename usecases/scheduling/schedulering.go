@@ -18,7 +18,7 @@ type Day struct {
 }
 
 type ExceptionalDate struct {
-	date      int64
+	Date      int64
 	Intervals []Interval
 }
 
@@ -92,18 +92,19 @@ func (interactor *SchedulingInteractor) GetAllSchedulersByUserId(userId uint64) 
 	}
 }
 
-func (interactor *SchedulingInteractor) BuildSchedulerForDateRange(schedulerId uint64, dates *[]time.Time) (map[time.Time]*[]*domains.Interval, error) {
-	result := make(map[time.Time]*[]*domains.Interval)
+func (interactor *SchedulingInteractor) BuildSchedulerForDateRange(schedulerId uint64, dates *[]time.Time) (map[time.Time]*ExceptionalDate, error) {
+	result := make(map[time.Time]*ExceptionalDate)
 	sort.Slice(*dates, func(i, j int) bool {
 		return (*dates)[i].Unix() < (*dates)[j].Unix()
 	})
-	for _, item := range *dates {
-		var err error
-		result[item], err = interactor.BuildSchedulerForDate(schedulerId, item)
+	for _, date := range *dates {
+		intervals, err := interactor.BuildSchedulerForDate(schedulerId, date)
 		if err != nil {
 			return result, err
 		}
+		result[date] = buildExceptionalDate(intervals)
 	}
+
 	return result, nil
 }
 
@@ -139,7 +140,7 @@ func sortIntervalSliceByDate(slice *[]*domains.Interval) {
 func (interactor *SchedulingInteractor) AddExceptionInScheduler(schedulerId uint64, exception *ExceptionalDate) error {
 	scheduler, _ := interactor.SchedulerRepository.FindById(schedulerId) // TODO handle error!
 	if scheduler != nil && exception != nil {
-		interactor.IntervalRepository.DeleteAllBySchedulerIdAndDate(schedulerId, exception.date)
+		interactor.IntervalRepository.DeleteAllBySchedulerIdAndDate(schedulerId, exception.Date)
 		if exception.Intervals != nil {
 			interactor.storeIntervalsFromExceptions(schedulerId, exception)
 		}
@@ -153,7 +154,7 @@ func (interactor *SchedulingInteractor) AddExceptionSliceInScheduler(schedulerId
 	scheduler, _ := interactor.SchedulerRepository.FindById(schedulerId) // TODO handle error!
 	if scheduler != nil && exceptions != nil {
 		for _, oneException := range *exceptions {
-			interactor.IntervalRepository.DeleteAllBySchedulerIdAndDate(schedulerId, oneException.date) // DeleteDateExceptions
+			interactor.IntervalRepository.DeleteAllBySchedulerIdAndDate(schedulerId, oneException.Date) // DeleteDateExceptions
 			if oneException.Intervals != nil {
 				interactor.storeIntervalsFromExceptions(schedulerId, &oneException)
 			}
@@ -213,7 +214,7 @@ func (interactor *SchedulingInteractor) storeIntervalsFromExceptions(schedulerId
 	for _, timeRange := range exception.Intervals {
 		start := timeRange.Start.GetTimeInMinutes()
 		end := timeRange.End.GetTimeInMinutes()
-		interval, err := domains.InitInterval(schedulerId, exception.date, start, end, 1)
+		interval, err := domains.InitInterval(schedulerId, exception.Date, start, end, 1)
 		if err != nil {
 			return err
 		}
@@ -226,4 +227,23 @@ func (interactor *SchedulingInteractor) storeIntervalsFromExceptions(schedulerId
 func cleanUpDate(date *time.Time) time.Time {
 	year, month, day := date.Date()
 	return time.Date(year, month, day, 0, 0, 0, 0, time.UTC)
+}
+
+//todo handle errors mb like panic
+func buildExceptionalDate(intervals *[]*domains.Interval) *ExceptionalDate {
+	exceptionalDate := new(ExceptionalDate)
+	exceptionalDate.Intervals = make([]Interval, 0)
+	if len(*intervals) == 0 {
+		return exceptionalDate
+	}
+	exceptionalDate.Date = (*intervals)[0].Date
+
+	for _, interval := range *intervals {
+		startTime, _ := InitTime(uint16(interval.From/60), uint16(interval.From%60))
+		endTime, _ := InitTime(uint16(interval.To/60), uint16(interval.To%60))
+		timeRange, _ := InitTimeRange(startTime, endTime)
+		exceptionalDate.Intervals = append(exceptionalDate.Intervals, timeRange)
+	}
+
+	return exceptionalDate
 }
