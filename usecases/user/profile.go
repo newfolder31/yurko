@@ -8,10 +8,13 @@ type ProfileForm struct {
 	FirstName   string `json:"firstName"`
 	LastName    string `json:"lastName"`
 	FathersName string `json:"fathersName"`
+	Phone       string `json:"phone"`
+	AddressForm
 }
 
 type ProfileInteractor struct {
-	UserRepository UserRepository
+	UserRepository    UserRepository
+	AddressRepository AddressRepository
 }
 
 func (interactor *ProfileInteractor) GetUser(email string) (*User, error) {
@@ -21,7 +24,7 @@ func (interactor *ProfileInteractor) GetUser(email string) (*User, error) {
 
 func (interactor *ProfileInteractor) GetProfileResponse(email string) (map[string]interface{}, error) {
 	user, err := interactor.UserRepository.FindByEmail(email)
-	if err != nil {
+	if err != nil || user == nil {
 		return nil, err
 	}
 
@@ -29,9 +32,20 @@ func (interactor *ProfileInteractor) GetProfileResponse(email string) (map[strin
 
 	userMap["id"] = user.Id
 	userMap["email"] = user.Email
-	userMap["first_name"] = user.FirstName
-	userMap["last_name"] = user.LastName
-	userMap["fathers_name"] = user.FathersName
+	userMap["firstName"] = user.FirstName
+	userMap["lastName"] = user.LastName
+	userMap["fathersName"] = user.FathersName
+	userMap["phone"] = user.Phone
+
+	if user.AddressId != 0 {
+		address, err := interactor.AddressRepository.FindById(user.AddressId)
+		if err != nil {
+			return nil, err
+		}
+		userMap["building"] = address.Building
+		userMap["city"] = address.City
+		userMap["street"] = address.Street
+	}
 
 	return userMap, nil
 }
@@ -60,8 +74,34 @@ func (interactor *ProfileInteractor) UpdateUser(form *ProfileForm) (*User, error
 	user.FirstName = form.FirstName
 	user.LastName = form.LastName
 	user.FathersName = form.FathersName
+	user.Phone = form.Phone
+
+	if user.AddressId == 0 {
+		address := interactor.createAddress(form)
+		user.AddressId = address.Id
+	} else {
+		interactor.updateAddress(user.AddressId, form)
+	}
 
 	interactor.UserRepository.Store(user)
 
 	return user, nil
+}
+
+func (interactor *ProfileInteractor) updateAddress(id int, form *ProfileForm) *Address {
+	address, _ := interactor.AddressRepository.FindById(id)
+	address.Building = form.Building
+	address.City = form.City
+	address.Street = form.Street
+	interactor.AddressRepository.Store(address)
+	return address
+}
+
+func (interactor *ProfileInteractor) createAddress(form *ProfileForm) *Address {
+	address := Address{}
+	address.Building = form.Building
+	address.City = form.City
+	address.Street = form.Street
+	interactor.AddressRepository.Store(&address)
+	return &address
 }

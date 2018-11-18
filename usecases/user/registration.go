@@ -17,13 +17,12 @@ type FastRegistrationForm struct {
 	FathersName string `json:"fathersName"`
 }
 
-//todo: add fields  Address, Phone to domain user
 type RegistrationForm struct {
 	FastRegistrationForm
-	Address Address
-	Phone   string `json:"phone"`
+	AddressForm
+	Phone string `json:"phone"`
 }
-type Address struct {
+type AddressForm struct {
 	Building string `json:"building"`
 	Street   string `json:"street"`
 	City     string `json:"city"`
@@ -42,19 +41,15 @@ func (form RegistrationForm) Validate() error {
 	return validation.ValidateStruct(&form,
 		validation.Field(&form.FastRegistrationForm),
 		validation.Field(&form.Phone, validation.Required, validation.Match(regexp.MustCompile("^[+]{0,1}[0-9 ]{6,14}$"))), //todo: optimize regexp
-		validation.Field(&form.Address),
-	)
-}
-func (address Address) Validate() error {
-	return validation.ValidateStruct(&address,
-		validation.Field(&address.Building, validation.Length(1, 10)),
-		validation.Field(&address.Street, validation.Length(2, 100)),
-		validation.Field(&address.City, validation.Length(2, 100)),
+		validation.Field(&form.Building, validation.Length(1, 10)),
+		validation.Field(&form.Street, validation.Length(2, 100)),
+		validation.Field(&form.City, validation.Length(2, 100)),
 	)
 }
 
 type RegistrationInteractor struct {
-	UserRepository UserRepository
+	UserRepository    UserRepository
+	AddressRepository AddressRepository
 }
 
 func (interactor *RegistrationInteractor) Registration(form *RegistrationForm) {
@@ -83,11 +78,26 @@ func (interactor *RegistrationInteractor) createUser(form *RegistrationForm) (*U
 
 	user.IsActive = true //todo: activate user by email
 
+	address := interactor.createAddress(form)
+	user.AddressId = address.Id
+
 	interactor.UserRepository.Store(&user)
 
 	fmt.Println("user created", user)
 
 	return &user, nil
+}
+
+func (interactor *RegistrationInteractor) createAddress(form *RegistrationForm) *Address {
+	address := Address{}
+	address.Building = form.Building
+	address.City = form.City
+	address.Street = form.Street
+	interactor.AddressRepository.Store(&address)
+
+	fmt.Println("address created", address)
+
+	return &address
 }
 
 //todo: analyze and fix structure of fast and regular registration

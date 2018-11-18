@@ -16,7 +16,7 @@ func Run() error {
 	corsRule := cors.New(cors.Options{
 		AllowOriginFunc:  AllowOriginFunc,
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"Accept", "Author ization", "Content-Type", "application/json"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "application/json"},
 		ExposedHeaders:   []string{"Link"},
 		AllowCredentials: true,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers

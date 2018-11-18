@@ -32,18 +32,21 @@ func (webservice UserWebserviceHandler) UpdateUser(w http.ResponseWriter, r *htt
 		fmt.Fprintf(w, "some error in parse request params: %s!", err)
 		w.WriteHeader(http.StatusBadRequest)
 	} else {
-		cookie, err := r.Cookie(infrastructures.COOKIE_SESSION_NAME)
+		sessionId, err := r.Cookie(infrastructures.COOKIE_SESSION_NAME)
 
-		if cookie.Value == "" || err != nil {
+		if sessionId.Value == "" || err != nil {
 			fmt.Fprintf(w, "authorization is failed: %s!", err)
 			w.WriteHeader(http.StatusUnauthorized)
 		} else {
 
-			var email = infrastructures.InMemorySession.Get(cookie.Value)
+			var email = infrastructures.InMemorySession.Get(sessionId.Value)
 			if err := webservice.ProfileInteractor.ValidateUser(email, form); err != nil {
 				w.WriteHeader(http.StatusBadRequest)
 			} else {
-				/*var user, _ = */ webservice.ProfileInteractor.UpdateUser(form)
+				var user, _ = webservice.ProfileInteractor.UpdateUser(form)
+				if email != user.Email {
+					infrastructures.InMemorySession.Update(sessionId.Value, user.Email)
+				}
 				w.WriteHeader(http.StatusOK)
 			}
 		}

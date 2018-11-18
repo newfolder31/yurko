@@ -46,6 +46,12 @@ func (s *Session) Get(sessionId string) string {
 	return data.Email
 }
 
+func (s *Session) Update(sessionId string, email string) string {
+	data := &sessionData{Email: email}
+	s.data[sessionId] = data
+	return sessionId
+}
+
 func (s *Session) Delete(sessionId string) {
 	delete(s.data, sessionId)
 }
