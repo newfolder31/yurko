@@ -36,8 +36,8 @@ type Scheduler struct {
 type Interval struct {
 	Id          uint64
 	SchedulerId uint64
-	From        uint16 // to
-	To          uint16 // to
+	From        uint16 // in minutest from start day (from 00:00) example - 06:00 -> 360
+	To          uint16 // in minutest from start day (from 00:00)
 	Date        int64  // date for exceptional situation: overriding default interval
 	weekDay     uint8
 }

@@ -1,5 +1,10 @@
 package infrastructures
 
+import (
+	"database/sql"
+	"fmt"
+)
+
 //
 //import (
 //	"fmt"
@@ -84,3 +89,20 @@ package infrastructures
 //	postgresHandler.Conn = conn
 //	return postgresHandler
 //}
+
+func ConnectToDB(host, user, password, dbname string, port int) *sql.DB {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"password=%s dbname=%s sslmode=disable",
+		host, port, user, password, dbname)
+
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		panic(err)
+	}
+
+	if err = db.Ping(); err != nil {
+		panic(err)
+	}
+
+	return db
+}
